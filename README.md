@@ -1,4 +1,9 @@
 # SULLEY 🚪 ⚡
+<p align='center'>
+  <img src="https://github.com/user-attachments/assets/d2298efa-b9c7-43e1-b3c3-857f15c4cd98" alt="drawing SULLEY" width="400"/>
+</p>
+
+
 
 **SULLEY** stands for **Symmetry Understanding of Local Frames for Learning Equivariant geometrY**. This project focuses on developing a framework to find local frames for each atom in a molecule, allowing for the accurate description of their electrostatic multipoles.
 
@@ -26,7 +31,3 @@ Instructions for installation will be provided soon.
 ## Project Status
 
 The project is currently under development and ongoing research. Contributions and suggestions are welcome!
-
----
-
-N’hésite pas à me dire si tu souhaites modifier certains aspects ou ajouter d’autres informations !
