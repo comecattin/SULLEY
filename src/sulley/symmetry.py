@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """ This module intend to extract the symmetry of a molecule."""
 
-from rdkit import Chem
-from extract_neighbors import load_molecule
 import networkx as nx
 import networkx.algorithms.isomorphism as iso
 
@@ -169,6 +167,10 @@ def compute_symmetry_type(mol):
 
 
 if __name__ == "__main__":
+    
+    from extract_neighbors import load_molecule
+
     smiles = "C1=CC=CC=C1"
     mol = load_molecule(smiles)
     index_to_matching_indices = compute_symmetry_type(mol)
+    idx_to_sym_class, symmetry_class = get_canonical_labels(mol)
