@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "SULLEY"
+authors = [
+   {name = "Côme Cattin", email = "come.cattin@sorbonne-universite.fr"}
+]
+description = "Symmetry Understanding of Local frames for Learning Equivariant geometrY"
+readme = "README.MD"
+version = "1.0.0"
+dependencies = [
+   "rdkit",
+   "networkx",
+   "pytest",
+]
+license = {file = "LICENSE"}
+keywords = ["Local Frame", "Geometry", "Equivariant", "Polarisation"]
+classifiers = [
+
+  "Development Status :: 3 - Alpha",
+
+  "Intended Audience :: Education",
+  "Topic :: Scientific/Engineering :: Chemistry",
+
+  "Natural Language :: English",
+
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+]
+
+[project.urls]
+Repository = "https://github.com/comecattin/SULLEY"
+Issues = "https://github.com/comecattin/SULLEY/issues"
