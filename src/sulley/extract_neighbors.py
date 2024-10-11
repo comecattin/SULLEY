@@ -152,6 +152,55 @@ def check_neighbors_same_type(atom, neighbors, idx_to_sym_class):
     if ref_type in neighbors_type:
         same_type = True
     return same_type
+
+def at_least_heavy_neighbor(atom):
+    """Check if an atom has at least one heavy neighbor.
+
+    Parameters
+    ----------
+    atom : rdkit.Chem.Atom
+        Atom.
+    
+    Returns
+    -------
+    found_heavy : bool
+        True if the atom has at least one heavy neighbor.
+    """
+
+    found_heavy = False
+    check_neighbors = atom.GetNeighbors()
+    for neighbor in check_neighbors:
+        if neighbor.GetAtomicNum() != 1:
+            found_heavy = True
+            break
+    return found_heavy
+
+def grab_index_from_unique_type_number(atom_list, type_num, idx_to_sym_class):
+    """Grab the index of atoms that have the same symmetry class.
+
+    Parameters
+    ----------
+    atom_list : list
+        List of atoms.
+    type_num : int
+        Symmetry class.
+    idx_to_sym_class : dict
+        Dictionary of the atom index to the symmetry class.
+
+    Returns
+    -------
+    atom_index : list
+        List of atom indices.
+    """
+
+    idx_list = []
+
+    for atom in atom_list:
+        idx = atom.GetIdx()
+        if idx_to_sym_class[idx] == type_num:
+            if idx not in idx_list:
+                idx_list.append(idx)
+    return atom_index
         
 
 
