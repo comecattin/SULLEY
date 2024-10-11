@@ -3,7 +3,7 @@
 """ This module intend to generate a local frame file."""
 
 import symmetry
-
+import extract_neighbors
 
 def generate_local_frame(mol):
 
@@ -13,6 +13,9 @@ def generate_local_frame(mol):
     idx_to_trisec_idx={}
 
     atom_iter = mol.GetAtoms()
+
+    # Get the symmetry class of the atoms
+    idx_to_sym_class, symmetry_class = symmetry.get_canonical_labels(mol)
 
     for atom in atom_iter:
 
@@ -26,16 +29,26 @@ def generate_local_frame(mol):
         atomic_num = atom.GetAtomicNum()
         atom_neighbors = atom.GetNeighbors()
         valence = len(atom_neighbors)
+        num_hydrogens = atom.GetTotalNumHs()
+        is_in_a_ring = atom.IsInRing()
 
-        # Get the symmetry class of the atom and its neighbors
-        idx_to_sym_class, symmetry_class = symmetry.get_canonical_labels(mol)
+        # Get the neighbors type
         neighbors_type = list(
             [idx_to_sym_class[neighbor.GetIdx()] for neighbor in atom_neighbors]
         )
         unique_neighbors_type = list(set(neighbors_type))
+        sorted_unique_neighbors_no_repeat = extract_neighbors.find_unique_non_repeating_neighbors(
+            atom_neighbors, idx_to_sym_class
+        )
+
+
+        
+        
 
         
 
 
 if __name__ == "__main__":
-    pass
+    smiles = "C1=CC=CC=C1"
+    mol = extract_neighbors.load_molecule(smiles)
+    generate_local_frame(mol)
