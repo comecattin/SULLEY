@@ -81,6 +81,28 @@ def find_unique_non_repeating_neighbors(atom_neighbors, idx_to_sym_class):
     
     return sorted_unique_neighbors_no_repeat
 
+def remove_from_list(atom_list, atom):
+    """Remove an atom from a list of atoms.
+
+    Parameters
+    ----------
+    atom_list : list
+        List of atoms.
+    atom : rdkit.Chem.Atom
+        Atom to remove.
+    
+    Returns
+    -------
+    new_atom_list : list
+        List of atoms without the atom to remove.
+    """
+
+    new_atom_list = []
+    for new_atom in atom_list:
+        if atom.getIdx() != new_atom.getIdx():
+            new_atom_list.append(new_atom)
+    return new_atom_list
+
 
 
 
