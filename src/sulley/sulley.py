@@ -72,7 +72,7 @@ def generate_local_frame(mol):
             )
             highest_sym_neighbor_unique_neighbors_type = list(set(highest_sym_neighbor_neighbors_type))
             highest_sym_neighbor_neighbors_without_atom = extract_neighbors.remove_from_list(highest_sym_neighbor_neighbors, atom)
-            highest_sym_neighbor_highest_sym_neighbor = list(
+            highest_sym_neighbor_unique_neighbors_type_without_atom = list(
                 set(
                     [idx_to_sym_class[neighbor.GetIdx()]
                     for neighbor in highest_sym_neighbor_neighbors_without_atom]
@@ -117,7 +117,7 @@ def generate_local_frame(mol):
                 len(unique_neighbors_type) == 2
                 and valence == 4
                 and valence == highest_sym_neighbor_valence
-                and len(highest_sym_neighbor_neighbors_type) == 2
+                and len(highest_sym_neighbor_unique_neighbors_type) == 2
                 and extract_neighbors.check_neighbors_same_type(
                     atom,
                     highest_sym_neighbor_neighbors_without_atom,
@@ -126,6 +126,53 @@ def generate_local_frame(mol):
             ):
                 local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
                 local_frame2[atom_index] = 0
+                is_found_case = True
+
+            # Like methyl-amine => Z-then-bisec
+            elif (
+                (
+                    (
+                        valence == 4
+                        and len(unique_neighbors_type) == 2
+                        and highest_sym_neighbor_valence == 3
+                        and highest_sym_neighbor_hybridization != 2
+                    )
+                    or (
+                        valence == 3
+                        and hybridization != 2
+                        and len(unique_neighbors_type) == 2
+                        and (
+                            highest_sym_neighbor_valence == 3
+                            or highest_sym_neighbor_valence == 4
+                        )
+                    )
+                )
+                and len(highest_sym_neighbor_unique_neighbors_type) == 2
+                and len(highest_sym_neighbor_unique_neighbors_type_without_atom) == 1
+                and (
+                    num_hydrogens == 2
+                    or highest_sym_neighbor_num_hydrogens == 2
+                )
+
+            ):
+                idx_to_bisec_then_z_bool[atom_index] = True
+                if atomic_num == 6:
+                    bisec_idx = [
+                        neighbors.GetIdx()
+                        for neighbors in highest_sym_neighbor_neighbors_without_atom
+                    ]
+                else:
+                    neighbors_without_atom = extract_neighbors.remove_from_list(
+                        atom_neighbors, highest_sym_neighbor
+                    )
+                    bisec_idx = [
+                        neighbor.GetIdx()
+                        for neighbor in neighbors_without_atom
+                    ]
+                
+                idx_to_bisec_idx[atom_index] = bisec_idx
+                local_frame1[atom_index] = highest_sym_neighbor_idx
+                is_found_case = True
 
 
 
