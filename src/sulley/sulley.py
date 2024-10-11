@@ -245,6 +245,17 @@ def generate_local_frame(mol):
                 local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
                 local_frame2[atom_index] = 0
                 is_found_case = True
+            
+            # Like H on iodine => Z-only
+            elif (
+                valence == 1
+                and highest_sym_neighbor_valence == 1
+                and len(unique_neighbors_type) == 1
+            ):
+                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
+                local_frame2[atom_index] = 0
+                is_found_case = True
+            
 
         
 
