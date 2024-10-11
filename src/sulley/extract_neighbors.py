@@ -118,7 +118,7 @@ def check_all_atom_same_class(class_list, idx_to_sym_class):
     all_symm : bool
         True if all atoms have the same symmetry class.
     """
-    
+
     all_symm = True
     if len(class_list) >= 1:
         first_class = idx_to_sym_class[class_list[0].GetIdx()]
@@ -127,6 +127,31 @@ def check_all_atom_same_class(class_list, idx_to_sym_class):
                 all_symm = False
                 break
     return all_symm
+
+def check_neighbors_same_type(atom, neighbors, idx_to_sym_class):
+    """Check if the neighbors of an atom have the same symmetry class.
+
+    Parameters
+    ----------
+    atom : rdkit.Chem.Atom
+        Atom.
+    neighbors : list
+        List of neighbors.
+    idx_to_sym_class : dict
+        Dictionary of the atom index to the symmetry class.
+    
+    Returns
+    -------
+    same_type : bool
+        True if the neighbors have the same symmetry class.
+    """
+    
+    same_type = False
+    ref_type = idx_to_sym_class[atom.GetIdx()]
+    neighbors_type = [idx_to_sym_class[neighbor.GetIdx()] for neighbor in neighbors]
+    if ref_type in neighbors_type:
+        same_type = True
+    return same_type
         
 
 
