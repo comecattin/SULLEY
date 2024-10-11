@@ -12,8 +12,8 @@ def generate_local_frame(mol):
     idx_to_trisec_bool={}
     idx_to_trisec_idx={}
 
-    local_frame1 = []
-    local_frame2 = []
+    local_frame1 = [0] * mol.GetNumAtoms()
+    local_frame2 = [0] * mol.GetNumAtoms()
 
     atom_iter = mol.GetAtoms()
 
@@ -269,7 +269,8 @@ def generate_local_frame(mol):
                 local_frame2[atom_index] = 0
                 is_found_case = True
             
-
+    print(local_frame1)
+    print(local_frame2)
         
 
         
