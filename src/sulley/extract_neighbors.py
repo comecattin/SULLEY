@@ -103,6 +103,32 @@ def remove_from_list(atom_list, atom):
             new_atom_list.append(new_atom)
     return new_atom_list
 
+def check_all_atom_same_class(class_list, idx_to_sym_class):
+    """Check if all atoms in a list have the same symmetry class.
+
+    Parameters
+    ----------
+    class_list : list
+        List of atoms.
+    idx_to_sym_class : dict
+        Dictionary of the atom index to the symmetry class.
+    
+    Returns
+    -------
+    all_symm : bool
+        True if all atoms have the same symmetry class.
+    """
+    
+    all_symm = True
+    if len(class_list) >= 1:
+        first_class = idx_to_sym_class[class_list[0].GetIdx()]
+        for atom in class_list:
+            if idx_to_sym_class[atom.GetIdx()] != first_class:
+                all_symm = False
+                break
+    return all_symm
+        
+
 
 
 
