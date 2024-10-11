@@ -59,7 +59,7 @@ def get_canonical_labels(mol, start_idx:int = 0):
         symclass += 1
     for sym_class, group in sym_class_to_group.items():
         for idx in group:
-            idx_to_sym_class[idx+1] = sym_class
+            idx_to_sym_class[idx] = sym_class
     
     symmetry_class = idx_to_sym_class.values()
 
