@@ -112,6 +112,20 @@ def generate_local_frame(mol):
                 idx_to_bisec_idx[atom_index] = bisec_idx
                 found_case = True
 
+            # Like CH3PO3 => Z-only
+            elif (
+                len(unique_neighbors_type) == 2
+                and valence == 4
+                and valence == highest_sym_neighbor_valence
+                and len(highest_sym_neighbor_neighbors_type) == 2
+                and extract_neighbors.check_neighbors_same_type(
+                    atom,
+                    highest_sym_neighbor_neighbors_without_atom,
+                    idx_to_sym_class
+                ) == False
+            ):
+                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
+                local_frame2[atom_index] = 0
 
 
 
