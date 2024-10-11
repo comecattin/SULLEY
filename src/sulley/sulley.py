@@ -110,7 +110,7 @@ def generate_local_frame(mol):
                 bisec_idx = [neighbors.GetIdx()
                             for neighbors in highest_sym_neighbor_neighbors_without_atom]
                 idx_to_bisec_idx[atom_index] = bisec_idx
-                found_case = True
+                is_found_case = True
 
             # Like CH3PO3 => Z-only
             elif (
@@ -268,9 +268,99 @@ def generate_local_frame(mol):
                 local_frame1[atom_index] = highest_sym_neighbor_idx
                 local_frame2[atom_index] = 0
                 is_found_case = True
+        
+
+        #---------------#
+        # General cases #
+        #---------------#
+        if is_found_case == False:
+            first_neighbors = atom_neighbors[0].GetNeighbors()
+
+            # Like H in methane => Z-only
+            if (
+                valence == 1
+                and extract_neighbors.check_all_atom_same_class(
+                    first_neighbors, idx_to_sym_class
+                )
+                and len(first_neighbors) == 4
+            ):
+                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
+                local_frame2[atom_index] = 0
+                is_found_case = True
             
-    print(local_frame1)
-    print(local_frame2)
+            # Like C in methane => Z-only
+            elif (
+                valence == 4
+                and extract_neighbors.check_all_atom_same_class(
+                    atom_neighbors, idx_to_sym_class
+                )
+                and not extract_neighbors.at_least_heavy_neighbor(atom)
+            ):
+                idx_list = extract_neighbors.grab_index_from_unique_type_number(atom_neighbors, unique_neighbors_type[0], idx_to_sym_class)
+                local_frame1[atom_index] = idx_list[0]
+                local_frame2[atom_index] = 0
+            
+            # Like N in ammonia => trisect
+            elif (
+                valence == 3
+                and num_hydrogens == 3
+                and extract_neighbors.check_all_atom_same_class(
+                    atom_neighbors, idx_to_sym_class
+                )
+            ):
+                idx_to_trisec_bool[atom_index] = True
+                trisec_idx = [neighbors.GetIdx() for neighbors in atom_neighbors]
+                idx_to_trisec_idx[atom_index] = trisec_idx
+
+            # Like middle C in propane or O in H2O => ~Z-only
+            elif (
+                (
+                    valence == 2
+                    and extract_neighbors.check_all_atom_same_class(
+                        atom_neighbors, idx_to_sym_class
+                    )
+                )
+                or (
+                    valence == 4
+                    and len(unique_neighbors_type) == 2
+                )
+                and len(sorted_unique_neighbors_no_repeat) == 0
+            ):
+                idx_list = extract_neighbors.grab_index_from_unique_type_number(atom_neighbors, unique_neighbors_type[0], idx_to_sym_class)
+                local_frame1[atom_index - 1] = -1 * idx_list[0]
+                local_frame2[atom_index - 1] = -1 * idx_list[1]
+            
+            # Like ethane, ethene, ... => Z-only
+            elif (
+                len(unique_neighbors_type) == 2
+                and extract_neighbors.check_neighbors_same_type(
+                    atom, atom_neighbors, idx_to_sym_class
+                )
+                and not is_in_a_ring
+            ):
+                local_frame1[atom_index - 1] = sorted_unique_neighbors_no_repeat[0]
+                local_frame2[atom_index - 1] = 0
+            
+            # Like benzene, C on aniline => ~Z-only
+            elif (
+                len(unique_neighbors_type) == 2
+                and valence == 3
+            ):
+                type_num_to_count = {}
+                for type_num in neighbors_type:
+                    count = neighbors_type.count(type_num)
+                    type_num_to_count[type_num] = count
+                max_count = max(type_num_to_count.values())
+                for type_num in unique_neighbors_type:
+                    count = type_num_to_count[type_num]
+                    if count == max_count:
+                        break
+                idx_list = extract_neighbors.grab_index_from_unique_type_number(atom_neighbors, type_num, idx_to_sym_class)
+                local_frame1[atom_index - 1] = -1 * idx_list[0]
+                local_frame2[atom_index - 1] = -1 * idx_list[1]
+
+            
+    
         
 
         
