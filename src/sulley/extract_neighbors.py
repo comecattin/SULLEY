@@ -99,7 +99,7 @@ def remove_from_list(atom_list, atom):
 
     new_atom_list = []
     for new_atom in atom_list:
-        if atom.getIdx() != new_atom.getIdx():
+        if atom.GetIdx() != new_atom.GetIdx():
             new_atom_list.append(new_atom)
     return new_atom_list
 
