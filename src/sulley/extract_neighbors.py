@@ -61,15 +61,24 @@ def find_unique_non_repeating_neighbors(atom_neighbors, idx_to_sym_class):
         List of unique non-repeating neighbors.
     """
     
-    unique_neighbors_type = []
-    unique_neighbors = []
+    dict_type_repeats = {}
     for neighbor in atom_neighbors:
-        neighbor_index = neighbor.GetIdx()
-        neighbor_sym_class = idx_to_sym_class[neighbor_index]
-        if neighbor_sym_class not in unique_neighbors_type:
-            unique_neighbors.append(neighbor_index)
-            unique_neighbors_type.append(neighbor_sym_class)
-    sorted_unique_neighbors_no_repeat = sorted(unique_neighbors, reverse=True)
+        
+        type_neighbor = idx_to_sym_class[neighbor.GetIdx()]
+        
+        # Count the number of times a neighbor type is repeated
+        if type_neighbor not in dict_type_repeats.keys():
+            dict_type_repeats[type_neighbor] = 0
+        dict_type_repeats[type_neighbor] += 1
+
+        unique_neighbors = []
+        # If the neighbor type is repeated only once, add it to the list
+        for type_neighbor, repeats in dict_type_repeats.items():
+            if repeats == 1:
+                unique_neighbors.append(neighbor.GetIdx())
+        sorted_unique_neighbors_no_repeat = sorted(unique_neighbors, reverse=True)
+
+    
     return sorted_unique_neighbors_no_repeat
 
 
