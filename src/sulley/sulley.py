@@ -40,9 +40,41 @@ def generate_local_frame(mol):
         sorted_unique_neighbors_no_repeat = extract_neighbors.find_unique_non_repeating_neighbors(
             atom_neighbors, idx_to_sym_class
         )
+        neighbors_idx = [neighbor.GetIdx() for neighbor in atom_neighbors]
+
+        # Their is at least one unique neighbor
+        if len(sorted_unique_neighbors_no_repeat) != 0:
+            
+            # Take the highest symmetry neighbor
+            highest_sym_neighbor_idx = sorted_unique_neighbors_no_repeat[0]
+            highest_sym_neighbor = mol.GetAtomWithIdx(highest_sym_neighbor_idx)
+            
+            # Get the properties of the highest symmetry neighbor
+            highest_sym_neighbor_atomic_num = highest_sym_neighbor.GetAtomicNum()
+            highest_sym_neighbor_hybridization = highest_sym_neighbor.GetHybridization()
+            highest_sym_neighbor_num_hydrogens = highest_sym_neighbor.GetTotalNumHs()
+            
+            # Neighbors of the highest symmetry neighbor
+            highest_sym_neighbor_neighbors = highest_sym_neighbor.GetNeighbors()
+            highest_sym_neighbor_valence = len(highest_sym_neighbor_neighbors)
+            highest_sym_neighbor_neighbors_type = list(
+                [idx_to_sym_class[neighbor.GetIdx()]
+                for neighbor in highest_sym_neighbor_neighbors]
+            )
+            highest_sym_neighbor_unique_neighbors_type = list(set(highest_sym_neighbor_neighbors_type))
+            highest_sym_neighbor_neighbors_without_atom = extract_neighbors.remove_from_list(highest_sym_neighbor_neighbors, atom)
+            highest_sym_neighbor_highest_sym_neighbor = list(
+                set(
+                    [idx_to_sym_class[neighbor.GetIdx()]
+                    for neighbor in highest_sym_neighbor_neighbors_without_atom]
+                )
+            )
+
+            # Neighbors without the atom
+            atom_neighbors_without_atom = extract_neighbors.remove_from_list(atom_neighbors, atom)
 
 
-        
+
         
 
         
