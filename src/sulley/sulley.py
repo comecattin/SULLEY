@@ -12,12 +12,17 @@ def generate_local_frame(mol):
     idx_to_trisec_bool={}
     idx_to_trisec_idx={}
 
+    local_frame1 = []
+    local_frame2 = []
+
     atom_iter = mol.GetAtoms()
 
     # Get the symmetry class of the atoms
     idx_to_sym_class, symmetry_class = symmetry.get_canonical_labels(mol)
 
     for atom in atom_iter:
+
+        is_found_case = False
 
         atom_index = atom.GetIdx()
 
@@ -45,6 +50,10 @@ def generate_local_frame(mol):
         # Their is at least one unique neighbor
         if len(sorted_unique_neighbors_no_repeat) != 0:
             
+            #~~~~~~~~~~~~~~~~~~~~~~~~~~#
+            #    Atomic environment    #
+            #~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
             # Take the highest symmetry neighbor
             highest_sym_neighbor_idx = sorted_unique_neighbors_no_repeat[0]
             highest_sym_neighbor = mol.GetAtomWithIdx(highest_sym_neighbor_idx)
@@ -72,6 +81,18 @@ def generate_local_frame(mol):
 
             # Neighbors without the atom
             atom_neighbors_without_atom = extract_neighbors.remove_from_list(atom_neighbors, atom)
+
+
+            #~~~~~~~~~~~~~~~~~~~~~~~#
+            #    Check atom Type    #
+            #~~~~~~~~~~~~~~~~~~~~~~~#
+
+            # Special case for N_2 => Z-only
+            if atomic_num == 7 and valence == 1:
+                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
+                local_frame2[atom_index] = 0
+                is_found_case = True
+
 
 
 
