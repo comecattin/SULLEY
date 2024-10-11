@@ -255,6 +255,19 @@ def generate_local_frame(mol):
                 local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
                 local_frame2[atom_index] = 0
                 is_found_case = True
+
+            # Like N(CH3)(CH3)(CH3)H => Z-only
+            elif (
+                valence == 4
+                and len(unique_neighbors_type) == 2
+                and (
+                    len(highest_sym_neighbor_unique_neighbors_type_without_atom) == 0
+                    or len(highest_sym_neighbor_unique_neighbors_type_without_atom) == 1
+                )
+            ):
+                local_frame1[atom_index] = highest_sym_neighbor_idx
+                local_frame2[atom_index] = 0
+                is_found_case = True
             
 
         
