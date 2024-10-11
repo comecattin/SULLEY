@@ -87,11 +87,30 @@ def generate_local_frame(mol):
             #    Check atom Type    #
             #~~~~~~~~~~~~~~~~~~~~~~~#
 
+            #---------------#
+            # Special cases #
+            #---------------#
+
             # Special case for N_2 => Z-only
             if atomic_num == 7 and valence == 1:
                 local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
                 local_frame2[atom_index] = 0
                 is_found_case = True
+            
+            # Like H on amonia => Z-then-bisec
+            elif (
+                highest_sym_neighbor_valence == 3
+                and extract_neighbors.check_all_atom_same_class(
+                    highest_sym_neighbor_neighbors, idx_to_sym_class
+                )
+                and highest_sym_neighbor_num_hydrogens == 3
+            ):
+                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
+                idx_to_bisec_then_z_bool[atom_index] = True
+                bisec_idx = [neighbors.GetIdx()
+                            for neighbors in highest_sym_neighbor_neighbors_without_atom]
+                idx_to_bisec_idx[atom_index] = bisec_idx
+                found_case = True
 
 
 
