@@ -174,6 +174,27 @@ def generate_local_frame(mol):
                 local_frame1[atom_index] = highest_sym_neighbor_idx
                 is_found_case = True
 
+            # Like ethylamine => Z-then-bisec
+            elif (
+                valence == 3
+                and len(unique_neighbors_type) == 2
+                and highest_sym_neighbor_valence == 4
+                and hybridization != 2
+                and len(highest_sym_neighbor_unique_neighbors_type) == 3
+                and len(highest_sym_neighbor_unique_neighbors_type_without_atom) == 2
+            ):
+                neighbors_without_atom = extract_neighbors.remove_from_list(
+                    atom_neighbors, highest_sym_neighbor
+                )
+                bisec_idx = [
+                    neighbor.GetIdx()
+                    for neighbor in neighbors_without_atom
+                ]
+                idx_to_bisec_idx[atom_index] = bisec_idx
+                local_frame1[atom_index] = highest_sym_neighbor_idx
+                is_found_case = True
+                idx_to_bisec_then_z_bool[atom_index] = True
+
 
 
         
