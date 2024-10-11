@@ -195,6 +195,23 @@ def generate_local_frame(mol):
                 is_found_case = True
                 idx_to_bisec_then_z_bool[atom_index] = True
 
+            # Like dimethylamine => Z-then-bisec
+            elif(
+                valence == 1
+                and highest_sym_neighbor_valence == 3
+                and highest_sym_neighbor_num_hydrogens == 1
+                and len(unique_neighbors_type) == 1
+                and len(highest_sym_neighbor_unique_neighbors_type) == 2
+                and highest_sym_neighbor_atomic_num == 7
+            ):
+                idx_to_bisec_then_z_bool[atom_index] = True
+                bisec_idx = [
+                    neighbors.GetIdx()
+                    for neighbors in highest_sym_neighbor_neighbors_without_atom
+                ]
+                idx_to_bisec_idx[atom_index] = bisec_idx
+                local_frame1[atom_index] = highest_sym_neighbor_idx
+                is_found_case = True
 
 
         
