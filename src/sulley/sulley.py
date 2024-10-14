@@ -8,6 +8,7 @@ from itertools import permutations
 from rdkit import Chem
 from rdkit.Chem import rdMolTransforms
 from rdkit.Chem import AllChem
+from collections import Counter
 
 def generate_local_frame(mol):
 
@@ -406,6 +407,55 @@ def generate_local_frame(mol):
                     local_frame2[atom_index - 1] = 0
                     is_found_case = True
                     continue
+
+                
+                # Use the first most unique neighbor
+                
+                sorted_unique_neighbors_no_repeat_types = [
+                    idx_to_sym_class[i] for i in sorted_unique_neighbors_no_repeat
+                ]
+                # Atoms that have the same type as the current atom
+                atom_type = idx_to_sym_class[atom_index]
+                idx_of_the_same_type_to_move = [
+                    index
+                    for i, index in enumerate(
+                        sorted_unique_neighbors_no_repeat
+                    )
+                    if sorted_unique_neighbors_no_repeat_types[i] == atom_type
+                ]
+                # Reorder the list to have the same type at the end
+                sorted_unique_neighbors_no_repeat_new = [
+                    index for index in sorted_unique_neighbors_no_repeat
+                    if index not in idx_of_the_same_type_to_move
+                ]
+                sorted_unique_neighbors_no_repeat_new.extend(idx_of_the_same_type_to_move)
+                # Count the number of each type
+                type_num_to_count = Counter(sorted_unique_neighbors_no_repeat_types)
+                # Get the type that is the less repeated
+                min_count = min(type_num_to_count.values())
+                if min_count == 1:
+                    sym_type = next(
+                        sym_type for sym_type, count in type_num_to_count.items()
+                        if count == min_count
+                    )
+                    special_index = next(
+                        index for i, index in enumerate(sorted_unique_neighbors_no_repeat)
+                        if sorted_unique_neighbors_no_repeat_types[i] == sym_type
+                    )
+
+                    # Reorder the list to have the most rare unique type at the beginning
+                    sorted_unique_neighbors_no_repeat_new = [special_index] + [
+                        index for index in sorted_unique_neighbors_no_repeat
+                        if index != special_index
+                    ]
+                    sorted_unique_neighbors_no_repeat_new = sorted_unique_neighbors_no_repeat_new[:]
+
+                local_frame1[atom_index - 1] = sorted_unique_neighbors_no_repeat_new[0]
+                local_frame2[atom_index - 1] = sorted_unique_neighbors_no_repeat_new[1]
+
+
+
+
         
 
         
