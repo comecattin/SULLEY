@@ -4,8 +4,16 @@
 
 import symmetry
 import extract_neighbors
+from itertools import permutations
+from rdkit import Chem
+from rdkit.Chem import rdMolTransforms
+from rdkit.Chem import AllChem
 
 def generate_local_frame(mol):
+
+    # Get the conformer
+    AllChem.EmbedMolecule(mol)
+    conf = mol.GetConformer(0)
 
     idx_to_bisec_then_z_bool={}
     idx_to_bisec_idx={}
@@ -359,8 +367,45 @@ def generate_local_frame(mol):
                 local_frame1[atom_index - 1] = -1 * idx_list[0]
                 local_frame2[atom_index - 1] = -1 * idx_list[1]
 
-            
-    
+            # No special case found, more general processing
+            else:
+                # Only one unique neighbor: take neighbors of the highest symmetry neighbor
+                if len(sorted_unique_neighbors_no_repeat) == 1:
+                    neighbors_of_first_neighbor = highest_sym_neighbor.GetNeighbors()
+                    neighbors_of_first_neighbor_without_atom = extract_neighbors.remove_from_list(
+                        neighbors_of_first_neighbor, atom
+                    )
+                    sorted_unique_neighbors_no_repeat_new = extract_neighbors.find_unique_non_repeating_neighbors(
+                        neighbors_of_first_neighbor_without_atom, idx_to_sym_class
+                    )
+                    sorted_unique_neighbors_no_repeat += sorted_unique_neighbors_no_repeat_new
+
+
+                # Check if the molecule is linear
+                if len(sorted_unique_neighbors_no_repeat) >= 2:
+
+                    a_atom_idx = atom_index
+                    b_atom_idx = sorted_unique_neighbors_no_repeat[0]
+                    c_atom_idx = sorted_unique_neighbors_no_repeat[1]
+                    indices = [a_atom_idx, b_atom_idx, c_atom_idx]
+
+                    angle = rdMolTransforms.GetAngleDeg(conf,*indices)
+                    angle = angle%180
+                    angle_tolerance = 3.5
+                    is_linear = abs(angle) <= angle_tolerance
+
+                    # The molecule is linear => Z-only
+                    if is_linear:
+                        local_frame1[atom_index -1] = sorted_unique_neighbors_no_repeat[0]
+                        local_frame2[atom_index -1] = 0
+                        is_found_case = True
+                
+                # No unique neighbors found => Z-only
+                else:
+                    local_frame1[atom_index - 1] = neighbors_idx[0]
+                    local_frame2[atom_index - 1] = 0
+                    is_found_case = True
+                    continue
         
 
         
