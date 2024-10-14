@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
-""" This module intend to generate a local frame file."""
+""" This module intend to generate a local frame file.
+
+Made by C. Cattin, 2024.
+"""
 
 import symmetry
 import extract_neighbors
