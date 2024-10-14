@@ -340,8 +340,8 @@ def generate_local_frame(mol):
                 and len(sorted_unique_neighbors_no_repeat) == 0
             ):
                 idx_list = extract_neighbors.grab_index_from_unique_type_number(atom_neighbors, unique_neighbors_type[0], idx_to_sym_class)
-                local_frame1[atom_index - 1] = -1 * idx_list[0]
-                local_frame2[atom_index - 1] = -1 * idx_list[1]
+                local_frame1[atom_index] = -1 * idx_list[0]
+                local_frame2[atom_index] = -1 * idx_list[1]
             
             # Like ethane, ethene, ... => Z-only
             elif (
@@ -351,8 +351,8 @@ def generate_local_frame(mol):
                 )
                 and not is_in_a_ring
             ):
-                local_frame1[atom_index - 1] = sorted_unique_neighbors_no_repeat[0]
-                local_frame2[atom_index - 1] = 0
+                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
+                local_frame2[atom_index] = 0
             
             # Like benzene, C on aniline => ~Z-only
             elif (
@@ -369,8 +369,8 @@ def generate_local_frame(mol):
                     if count == max_count:
                         break
                 idx_list = extract_neighbors.grab_index_from_unique_type_number(atom_neighbors, type_num, idx_to_sym_class)
-                local_frame1[atom_index - 1] = -1 * idx_list[0]
-                local_frame2[atom_index - 1] = -1 * idx_list[1]
+                local_frame1[atom_index] = -1 * idx_list[0]
+                local_frame2[atom_index] = -1 * idx_list[1]
 
             # No special case found, more general processing
             else:
@@ -401,14 +401,14 @@ def generate_local_frame(mol):
 
                     # The molecule is linear => Z-only
                     if is_linear:
-                        local_frame1[atom_index -1] = sorted_unique_neighbors_no_repeat[0]
-                        local_frame2[atom_index -1] = 0
+                        local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
+                        local_frame2[atom_index] = 0
                         is_found_case = True
                 
                 # No unique neighbors found => Z-only
                 else:
-                    local_frame1[atom_index - 1] = neighbors_idx[0]
-                    local_frame2[atom_index - 1] = 0
+                    local_frame1[atom_index] = neighbors_idx[0]
+                    local_frame2[atom_index] = 0
                     is_found_case = True
                     continue
 
@@ -454,8 +454,8 @@ def generate_local_frame(mol):
                     ]
                     sorted_unique_neighbors_no_repeat_new = sorted_unique_neighbors_no_repeat_new[:]
 
-                local_frame1[atom_index - 1] = sorted_unique_neighbors_no_repeat_new[0]
-                local_frame2[atom_index - 1] = sorted_unique_neighbors_no_repeat_new[1]
+                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat_new[0]
+                local_frame2[atom_index] = sorted_unique_neighbors_no_repeat_new[1]
     
     # Write the local frame file
     write_file.write_peditin_file(

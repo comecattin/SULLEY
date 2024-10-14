@@ -24,8 +24,8 @@ def write_peditin_file(
         ):
             f.write(
                 str(atom_idx) + " " +
-                str(local_frame1[atom_idx -1]) + " " +
-                str(local_frame2[atom_idx -1]) + "\n"
+                str(local_frame1[atom_idx]) + " " +
+                str(local_frame2[atom_idx]) + "\n"
             )
         
         # Bisection then z-axis
@@ -36,7 +36,7 @@ def write_peditin_file(
             bisec_idx = idx_to_bisec_idx[atom_idx]
             f.write(
                 str(atom_idx) + " " +
-                str(local_frame1[atom_idx -1]) + " -" +
+                str(local_frame1[atom_idx]) + " -" +
                 str(bisec_idx[0]) + " -" +
                 str(bisec_idx[1]) + "\n"
             )
