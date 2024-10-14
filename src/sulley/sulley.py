@@ -7,6 +7,7 @@ Made by C. Cattin, 2024.
 
 import symmetry
 import extract_neighbors
+import write_file
 from itertools import permutations
 from rdkit import Chem
 from rdkit.Chem import rdMolTransforms
@@ -455,6 +456,15 @@ def generate_local_frame(mol):
 
                 local_frame1[atom_index - 1] = sorted_unique_neighbors_no_repeat_new[0]
                 local_frame2[atom_index - 1] = sorted_unique_neighbors_no_repeat_new[1]
+    
+    # Write the local frame file
+    write_file.write_peditin_file(
+        mol,
+        idx_to_bisec_then_z_bool, idx_to_trisec_bool,
+        idx_to_bisec_idx, idx_to_trisec_idx,
+        local_frame1, local_frame2,
+        filename = 'local_frame.txt'
+    )
 
 
 
