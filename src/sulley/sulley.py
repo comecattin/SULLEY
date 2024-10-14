@@ -25,8 +25,8 @@ def generate_local_frame(mol):
     idx_to_trisec_bool={}
     idx_to_trisec_idx={}
 
-    local_frame1 = [0] * mol.GetNumAtoms()
-    local_frame2 = [0] * mol.GetNumAtoms()
+    local_frame1 = [None] * mol.GetNumAtoms()
+    local_frame2 = [None] * mol.GetNumAtoms()
 
     atom_iter = mol.GetAtoms()
 
@@ -107,7 +107,7 @@ def generate_local_frame(mol):
             # Special case for N_2 => Z-only
             if atomic_num == 7 and valence == 1:
                 local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
-                local_frame2[atom_index] = 0
+                #local_frame2[atom_index] = 0
                 is_found_case = True
             
             # Like H on amonia => Z-then-bisec
@@ -138,7 +138,7 @@ def generate_local_frame(mol):
                 ) == False
             ):
                 local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
-                local_frame2[atom_index] = 0
+                #local_frame2[atom_index] = 0
                 is_found_case = True
 
             # Like methyl-amine => Z-then-bisec
@@ -256,7 +256,7 @@ def generate_local_frame(mol):
                 and len(highest_sym_neighbor_unique_neighbors_type_without_atom) ==1
             ):
                 local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
-                local_frame2[atom_index] = 0
+                #local_frame2[atom_index] = 0
                 is_found_case = True
             
             # Like H on iodine => Z-only
@@ -266,7 +266,7 @@ def generate_local_frame(mol):
                 and len(unique_neighbors_type) == 1
             ):
                 local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
-                local_frame2[atom_index] = 0
+                #local_frame2[atom_index] = 0
                 is_found_case = True
 
             # Like N(CH3)(CH3)(CH3)H => Z-only
@@ -279,7 +279,7 @@ def generate_local_frame(mol):
                 )
             ):
                 local_frame1[atom_index] = highest_sym_neighbor_idx
-                local_frame2[atom_index] = 0
+                #local_frame2[atom_index] = 0
                 is_found_case = True
         
 
@@ -298,7 +298,7 @@ def generate_local_frame(mol):
                 and len(first_neighbors) == 4
             ):
                 local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
-                local_frame2[atom_index] = 0
+                #local_frame2[atom_index] = 0
                 is_found_case = True
             
             # Like C in methane => Z-only
@@ -311,7 +311,7 @@ def generate_local_frame(mol):
             ):
                 idx_list = extract_neighbors.grab_index_from_unique_type_number(atom_neighbors, unique_neighbors_type[0], idx_to_sym_class)
                 local_frame1[atom_index] = idx_list[0]
-                local_frame2[atom_index] = 0
+                #local_frame2[atom_index] = 0
             
             # Like N in ammonia => trisect
             elif (
@@ -352,7 +352,7 @@ def generate_local_frame(mol):
                 and not is_in_a_ring
             ):
                 local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
-                local_frame2[atom_index] = 0
+                #local_frame2[atom_index] = 0
             
             # Like benzene, C on aniline => ~Z-only
             elif (
@@ -402,13 +402,13 @@ def generate_local_frame(mol):
                     # The molecule is linear => Z-only
                     if is_linear:
                         local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
-                        local_frame2[atom_index] = 0
+                        #local_frame2[atom_index] = 0
                         is_found_case = True
                 
                 # No unique neighbors found => Z-only
                 else:
                     local_frame1[atom_index] = neighbors_idx[0]
-                    local_frame2[atom_index] = 0
+                    #local_frame2[atom_index] = 0
                     is_found_case = True
                     continue
 
@@ -475,6 +475,17 @@ def generate_local_frame(mol):
 
 
 if __name__ == "__main__":
-    smiles = "C1=CC=CC=C1"
-    mol = extract_neighbors.load_molecule(smiles)
+    molecules = {
+        "Benzene": "c1ccccc1",
+        "Lactic Acid": "CC(C(=O)O)O",
+        "Aspirin": "CC(=O)OC1=CC=CC=C1C(=O)O",
+        "Caffeine": "CN1C=NC2=C1C(=O)N(C(=O)N2C)C",
+        "Ethanol": "CCO",
+        "Glucose": "C(C1C(C(C(C(O1)O)O)O)O)O",
+        "Cholesterol": "CC(C)CCCC(C)C1CCC2C1(CCC3C2CC=C4C3(CCCC4)C)O",
+        "Styrene": "C=CC1=CC=CC=C1",
+        "Acetaminophen": "CC(=O)NC1=CC=C(C=C1)O",
+        "Serotonin": "C1=CC2=C(C=C1CCN)NC=C2O"
+    }
+    mol = extract_neighbors.load_molecule(molecules["Ethanol"])
     generate_local_frame(mol)
