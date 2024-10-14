@@ -47,7 +47,7 @@ def generate_local_frame(mol):
         atomic_num = atom.GetAtomicNum()
         atom_neighbors = atom.GetNeighbors()
         valence = len(atom_neighbors)
-        num_hydrogens = atom.GetTotalNumHs()
+        num_hydrogens = atom.GetTotalNumHs(includeNeighbors=True)
         is_in_a_ring = atom.IsInRing()
 
         # Get the neighbors type
@@ -74,7 +74,7 @@ def generate_local_frame(mol):
             # Get the properties of the highest symmetry neighbor
             highest_sym_neighbor_atomic_num = highest_sym_neighbor.GetAtomicNum()
             highest_sym_neighbor_hybridization = highest_sym_neighbor.GetHybridization()
-            highest_sym_neighbor_num_hydrogens = highest_sym_neighbor.GetTotalNumHs()
+            highest_sym_neighbor_num_hydrogens = highest_sym_neighbor.GetTotalNumHs(includeNeighbors=True)
             
             # Neighbors of the highest symmetry neighbor
             highest_sym_neighbor_neighbors = highest_sym_neighbor.GetNeighbors()
@@ -485,7 +485,12 @@ if __name__ == "__main__":
         "Cholesterol": "CC(C)CCCC(C)C1CCC2C1(CCC3C2CC=C4C3(CCCC4)C)O",
         "Styrene": "C=CC1=CC=CC=C1",
         "Acetaminophen": "CC(=O)NC1=CC=C(C=C1)O",
-        "Serotonin": "C1=CC2=C(C=C1CCN)NC=C2O"
+        "Serotonin": "C1=CC2=C(C=C1CCN)NC=C2O",
+        "Ammonia": "N",
+        "Methane": "C",
+        "Phosphine": "P",
+        "Arsine": "[AsH3]",
+        "Trimethylamine": "CN(C)C"
     }
-    mol = extract_neighbors.load_molecule(molecules["Ethanol"])
+    mol = extract_neighbors.load_molecule(molecules["Trimethylamine"])
     generate_local_frame(mol)

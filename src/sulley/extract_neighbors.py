@@ -22,7 +22,6 @@ def load_molecule(smiles: str):
     """
     mol = Chem.MolFromSmiles(smiles)
     mol = Chem.AddHs(mol)
-    mol = Chem.Mol(mol)
     return mol
 
 def get_bonded_neighbors(mol, atom_idx):
