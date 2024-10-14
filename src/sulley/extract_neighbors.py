@@ -67,17 +67,17 @@ def find_unique_non_repeating_neighbors(atom_neighbors, idx_to_sym_class):
         type_neighbor = idx_to_sym_class[neighbor.GetIdx()]
         
         # Count the number of times a neighbor type is repeated
-        if type_neighbor not in dict_type_repeats.keys():
+        if type_neighbor not in dict_type_repeats:
             dict_type_repeats[type_neighbor] = 0
         dict_type_repeats[type_neighbor] += 1
 
-        unique_neighbors = []
-        # If the neighbor type is repeated only once, add it to the list
-        for type_neighbor, repeats in dict_type_repeats.items():
-            if repeats == 1:
-                unique_neighbors.append(neighbor.GetIdx())
-        sorted_unique_neighbors_no_repeat = sorted(unique_neighbors, reverse=True)
-
+    unique_neighbors = []
+    # If the neighbor type is repeated only once, add it to the list
+    for neighbor in atom_neighbors:
+        type_neighbor = idx_to_sym_class[neighbor.GetIdx()]
+        if dict_type_repeats[type_neighbor] == 1:
+            unique_neighbors.append(neighbor.GetIdx())
+    sorted_unique_neighbors_no_repeat = sorted(unique_neighbors, reverse=True)
     
     return sorted_unique_neighbors_no_repeat
 
@@ -194,13 +194,12 @@ def grab_index_from_unique_type_number(atom_list, type_num, idx_to_sym_class):
     """
 
     idx_list = []
-
     for atom in atom_list:
         idx = atom.GetIdx()
         if idx_to_sym_class[idx] == type_num:
             if idx not in idx_list:
                 idx_list.append(idx)
-    return atom_index
+    return idx_list
         
 
 
