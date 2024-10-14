@@ -11,6 +11,30 @@ def write_peditin_file(
         local_frame1, local_frame2,
         filename:str
     ):
+    """Write the local frame file.
+
+    Parameters
+    ----------
+    mol : mol : rdkit.Chem.Mol
+        RDKit molecule object.
+    idx_to_bisec_then_z_bool : dict
+        Index associated to a bisection then z-axis.
+    idx_to_trisec_bool : dict
+        Index associated to a trisection.
+    idx_to_bisec_idx : dict
+        Index associated to the bisection index.
+    idx_to_trisec_idx : dict
+        Index associated to the trisection index.
+    local_frame1 : list
+        Local frame first vector.
+    local_frame2 : list
+        Local frame second vector.
+    filename : str
+        Name of the file.
+    """
+
+    local_frame1 = sanitize_local_frame(local_frame1)
+    local_frame2 = sanitize_local_frame(local_frame2)
 
     f = open(filename, 'w')
 
@@ -23,7 +47,7 @@ def write_peditin_file(
             and not idx_to_trisec_bool[atom_idx]
         ):
             f.write(
-                str(atom_idx) + " " +
+                str(atom_idx + 1) + " " +
                 str(local_frame1[atom_idx]) + " " +
                 str(local_frame2[atom_idx]) + "\n"
             )
@@ -35,7 +59,7 @@ def write_peditin_file(
         ):
             bisec_idx = idx_to_bisec_idx[atom_idx]
             f.write(
-                str(atom_idx) + " " +
+                str(atom_idx + 1) + " " +
                 str(local_frame1[atom_idx]) + " -" +
                 str(bisec_idx[0]) + " -" +
                 str(bisec_idx[1]) + "\n"
@@ -45,12 +69,34 @@ def write_peditin_file(
         else:
             trisec_idx = idx_to_trisec_idx[atom_idx]
             f.write(
-                str(atom_idx) + " -" +
+                str(atom_idx + 1) + " -" +
                 str(trisec_idx[0]) + " -" +
                 str(trisec_idx[1]) + " -" +
                 str(trisec_idx[2]) + "\n"
             )
 
+def sanitize_local_frame(local_frame):
+    """Shift the local frame indices to start at 1.
+    
+    Parameters
+    ----------
+    local_frame : list
+        Local frame.
+    
+    Returns
+    -------
+    local_frame : list
+        Local frame shifted.
+    """
+    for i, atom in enumerate(local_frame):
+        if atom == None:
+            local_frame[i] = 0
+        elif atom < 0:
+            local_frame[i] -= 1
+        else:
+            local_frame[i] += 1
+    return local_frame 
+            
 
 
 
