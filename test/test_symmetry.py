@@ -1,5 +1,5 @@
-from sulley import symmetry
-from sulley import extract_neighbors
+from sulley.sulley import symmetry
+from sulley.sulley import extract_neighbors
 
 def test_symmetry_type_benzene():
     smiles = "C1=CC=CC=C1"
