@@ -61,18 +61,19 @@ def write_peditin_file(
             f.write(
                 str(atom_idx + 1) + " " +
                 str(local_frame1[atom_idx]) + " -" +
-                str(bisec_idx[0]) + " -" +
-                str(bisec_idx[1]) + "\n"
+                str(bisec_idx[0] + 1) + " -" +
+                str(bisec_idx[1] + 1) + "\n"
             )
         
         # Trisection
         else:
             trisec_idx = idx_to_trisec_idx[atom_idx]
+            print(trisec_idx)
             f.write(
                 str(atom_idx + 1) + " -" +
-                str(trisec_idx[0]) + " -" +
-                str(trisec_idx[1]) + " -" +
-                str(trisec_idx[2]) + "\n"
+                str(trisec_idx[0] + 1) + " -" +
+                str(trisec_idx[1] + 1) + " -" +
+                str(trisec_idx[2] + 1) + "\n"
             )
 
 def sanitize_local_frame(local_frame):
