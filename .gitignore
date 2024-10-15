@@ -162,3 +162,5 @@ cython_debug/
 #.idea/
 
 src/sulley/local_frame.txt
+test/*/*/*.txt
+test/*/*/*.mol
