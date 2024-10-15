@@ -106,7 +106,7 @@ def generate_local_frame(mol, filename="local_frame.txt"):
 
             # Special case for N_2 => Z-only
             if atomic_num == 7 and valence == 1:
-                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
+                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0] + 1
                 #local_frame2[atom_index] = 0
                 is_found_case = True
             
@@ -118,7 +118,7 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                 )
                 and highest_sym_neighbor_num_hydrogens == 3
             ):
-                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
+                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0] + 1
                 idx_to_bisec_then_z_bool[atom_index] = True
                 bisec_idx = [neighbors.GetIdx()
                             for neighbors in highest_sym_neighbor_neighbors_without_atom]
@@ -137,7 +137,7 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                     idx_to_sym_class
                 ) == False
             ):
-                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
+                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0] + 1
                 #local_frame2[atom_index] = 0
                 is_found_case = True
 
@@ -184,7 +184,7 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                     ]
                 
                 idx_to_bisec_idx[atom_index] = bisec_idx
-                local_frame1[atom_index] = highest_sym_neighbor_idx
+                local_frame1[atom_index] = highest_sym_neighbor_idx + 1
                 is_found_case = True
 
             # Like ethylamine => Z-then-bisec
@@ -204,7 +204,7 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                     for neighbor in neighbors_without_atom
                 ]
                 idx_to_bisec_idx[atom_index] = bisec_idx
-                local_frame1[atom_index] = highest_sym_neighbor_idx
+                local_frame1[atom_index] = highest_sym_neighbor_idx + 1
                 is_found_case = True
                 idx_to_bisec_then_z_bool[atom_index] = True
 
@@ -223,7 +223,7 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                     for neighbors in highest_sym_neighbor_neighbors_without_atom
                 ]
                 idx_to_bisec_idx[atom_index] = bisec_idx
-                local_frame1[atom_index] = highest_sym_neighbor_idx
+                local_frame1[atom_index] = highest_sym_neighbor_idx + 1
                 is_found_case = True
 
             # Like dimethylamine => Z-then-bisec
@@ -244,7 +244,7 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                     for neighbors in neighbors_without_atom
                 ]
                 idx_to_bisec_idx[atom_index] = bisec_idx
-                local_frame1[atom_index] = highest_sym_neighbor_idx
+                local_frame1[atom_index] = highest_sym_neighbor_idx + 1
                 is_found_case = True
             
             # Like H on benzene => Z-only
@@ -255,7 +255,7 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                 and len(highest_sym_neighbor_unique_neighbors_type) == 2
                 and len(highest_sym_neighbor_unique_neighbors_type_without_atom) ==1
             ):
-                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
+                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0] + 1
                 #local_frame2[atom_index] = 0
                 is_found_case = True
             
@@ -265,7 +265,7 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                 and highest_sym_neighbor_valence == 1
                 and len(unique_neighbors_type) == 1
             ):
-                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
+                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0] + 1
                 #local_frame2[atom_index] = 0
                 is_found_case = True
 
@@ -278,7 +278,7 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                     or len(highest_sym_neighbor_unique_neighbors_type_without_atom) == 1
                 )
             ):
-                local_frame1[atom_index] = highest_sym_neighbor_idx
+                local_frame1[atom_index] = highest_sym_neighbor_idx + 1
                 #local_frame2[atom_index] = 0
                 is_found_case = True
         
@@ -297,7 +297,7 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                 )
                 and len(first_neighbors) == 4
             ):
-                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
+                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0] + 1
                 #local_frame2[atom_index] = 0
                 is_found_case = True
             
@@ -310,7 +310,7 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                 and not extract_neighbors.at_least_heavy_neighbor(atom)
             ):
                 idx_list = extract_neighbors.grab_index_from_unique_type_number(atom_neighbors, unique_neighbors_type[0], idx_to_sym_class)
-                local_frame1[atom_index] = idx_list[0]
+                local_frame1[atom_index] = idx_list[0] + 1
                 #local_frame2[atom_index] = 0
             
             # Like N in ammonia => trisect
@@ -340,8 +340,8 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                 and len(sorted_unique_neighbors_no_repeat) == 0
             ):
                 idx_list = extract_neighbors.grab_index_from_unique_type_number(atom_neighbors, unique_neighbors_type[0], idx_to_sym_class)
-                local_frame1[atom_index] = -1 * idx_list[0]
-                local_frame2[atom_index] = -1 * idx_list[1]
+                local_frame1[atom_index] = -1 * (idx_list[0] + 1)
+                local_frame2[atom_index] = -1 * (idx_list[1] + 1)
             
             # Like ethane, ethene, ... => Z-only
             elif (
@@ -351,7 +351,7 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                 )
                 and not is_in_a_ring
             ):
-                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
+                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0] + 1
                 #local_frame2[atom_index] = 0
             
             # Like benzene, C on aniline => ~Z-only
@@ -369,8 +369,8 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                     if count == max_count:
                         break
                 idx_list = extract_neighbors.grab_index_from_unique_type_number(atom_neighbors, type_num, idx_to_sym_class)
-                local_frame1[atom_index] = -1 * idx_list[0]
-                local_frame2[atom_index] = -1 * idx_list[1]
+                local_frame1[atom_index] = -1 * (idx_list[0] + 1)
+                local_frame2[atom_index] = -1 * (idx_list[1] + 1)
 
             # No special case found, more general processing
             else:
@@ -401,13 +401,13 @@ def generate_local_frame(mol, filename="local_frame.txt"):
 
                     # The molecule is linear => Z-only
                     if is_linear:
-                        local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0]
+                        local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0] + 1
                         #local_frame2[atom_index] = 0
                         is_found_case = True
                 
                 # No unique neighbors found => Z-only
                 else:
-                    local_frame1[atom_index] = neighbors_idx[0]
+                    local_frame1[atom_index] = neighbors_idx[0] + 1
                     #local_frame2[atom_index] = 0
                     is_found_case = True
                     continue
@@ -454,8 +454,8 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                     ]
                     sorted_unique_neighbors_no_repeat_new = sorted_unique_neighbors_no_repeat_new[:]
 
-                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat_new[0]
-                local_frame2[atom_index] = sorted_unique_neighbors_no_repeat_new[1]
+                local_frame1[atom_index] = sorted_unique_neighbors_no_repeat_new[0] + 1
+                local_frame2[atom_index] = sorted_unique_neighbors_no_repeat_new[1] + 1
     
     # Write the local frame file
     write_file.write_peditin_file(
