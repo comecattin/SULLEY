@@ -5,16 +5,16 @@
 Made by C. Cattin, 2024.
 """
 
-import symmetry
-import extract_neighbors
-import write_file
+from sulley import symmetry
+from sulley import extract_neighbors
+from sulley import write_file
 from itertools import permutations
 from rdkit import Chem
 from rdkit.Chem import rdMolTransforms
 from rdkit.Chem import AllChem
 from collections import Counter
 
-def generate_local_frame(mol):
+def generate_local_frame(mol, filename="local_frame.txt"):
 
     # Get the conformer
     AllChem.EmbedMolecule(mol)
@@ -463,7 +463,7 @@ def generate_local_frame(mol):
         idx_to_bisec_then_z_bool, idx_to_trisec_bool,
         idx_to_bisec_idx, idx_to_trisec_idx,
         local_frame1, local_frame2,
-        filename = 'local_frame.txt'
+        filename = filename
     )
 
 
