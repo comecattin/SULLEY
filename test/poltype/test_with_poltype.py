@@ -3,7 +3,7 @@ from poltype import Poltype
 from openbabel import openbabel
 from multipole import gen_peditinfile
 from sulley.local_frame import generate_local_frame
-from sulley.extract_neighbors import load_molecule
+from sulley.extract_neighbors import load_molecule, load_molecule_from_sdf
 import os
 
 molecules = {
@@ -55,6 +55,36 @@ def test_trimethylamine():
     assert is_same_local_frame(
         test_path + "output/trimethylamine_lf_sulley.txt",
         test_path + "output/trimethylamine_lf_poltype.txt"
+    )
+
+def test_benzene():
+
+    test_path = os.getcwd() + "/test/poltype/"
+    
+    # Poltype
+    mol = open_sdf_convert_to_mol(
+        test_path + "structures/benzene.sdf",
+        test_path + "structures/benzene.mol"
+    )
+    poltype = Poltype(
+        mol,
+        peditinfile=test_path + "output/benzene_lf_poltype.txt",
+        molstructfname=test_path + "structures/benzene.mol",
+        paramfile=test_path + "polarize.prm"
+    )
+
+    gen_peditinfile(poltype, mol)
+    
+    # Sulley
+    mol = load_molecule_from_sdf(test_path + "structures/benzene.sdf")
+    generate_local_frame(
+        mol=mol,
+        filename=test_path + "output/benzene_lf_sulley.txt"
+    )
+
+    assert is_same_local_frame(
+        test_path + "output/benzene_lf_sulley.txt",
+        test_path + "output/benzene_lf_poltype.txt"
     )
 
 
