@@ -36,6 +36,11 @@ def main():
         action='store_true',
         help='Print the local frame to the console.'
     )
+    parser.add_argument(
+        '--debug',
+        action='store_true',
+        help='Print debug information. Compare to the Poltype local frame.',
+    )
 
     args = parser.parse_args()
 
@@ -60,6 +65,30 @@ def main():
     if args.verbose:
         with open(args.output, 'r') as f:
             print(f.read())
+    
+    if args.debug:
+        import os
+        import sys
+        sys.path.append(os.getcwd() + "/test/poltype/")
+        from poltype import Poltype
+        from multipole import gen_peditinfile
+        from test_with_poltype import open_sdf_convert_to_mol
+
+        mol = open_sdf_convert_to_mol(args.sdf, "temp.mol")
+        poltype = Poltype(
+            mol,
+            peditinfile="temp_poltype.txt",
+            molstructfname="temp.mol",
+            paramfile=os.getcwd()+"/test/poltype/polarize.prm"
+        )
+
+        gen_peditinfile(poltype, mol)
+
+        if args.verbose:
+            print("-------------")
+            with open("temp_poltype.txt", 'r') as f:
+                print(f.read())
+
     
 
 if __name__ == '__main__':

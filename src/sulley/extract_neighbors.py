@@ -37,8 +37,7 @@ def load_molecule_from_sdf(filename: str):
     mol : rdkit.Chem.Mol
         RDKit molecule object.
     """
-    mol = Chem.SDMolSupplier(filename)[0]
-    mol = Chem.AddHs(mol)
+    mol = Chem.SDMolSupplier(filename, removeHs=False)[0]
     return mol
 
 def get_bonded_neighbors(mol, atom_idx):

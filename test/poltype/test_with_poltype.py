@@ -87,6 +87,36 @@ def test_benzene():
         test_path + "output/benzene_lf_poltype.txt"
     )
 
+def test_lactic():
+
+    test_path = os.getcwd() + "/test/poltype/"
+    
+    # Poltype
+    mol = open_sdf_convert_to_mol(
+        test_path + "structures/lactic.sdf",
+        test_path + "structures/lactic.mol"
+    )
+    poltype = Poltype(
+        mol,
+        peditinfile=test_path + "output/lactic_lf_poltype.txt",
+        molstructfname=test_path + "structures/lactic.mol",
+        paramfile=test_path + "polarize.prm"
+    )
+
+    gen_peditinfile(poltype, mol)
+    
+    # Sulley
+    mol = load_molecule_from_sdf(test_path + "structures/lactic.sdf")
+    generate_local_frame(
+        mol=mol,
+        filename=test_path + "output/lactic_lf_sulley.txt"
+    )
+
+    assert is_same_local_frame(
+        test_path + "output/lactic_lf_sulley.txt",
+        test_path + "output/lactic_lf_poltype.txt"
+    )
+
 
 def open_sdf_convert_to_mol(sdf_file, mol_file):
     obConversion = openbabel.OBConversion()

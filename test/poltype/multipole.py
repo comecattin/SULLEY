@@ -273,7 +273,7 @@ def gen_peditinfile(poltype,mol):
             foundcase=False
             numhyds=GrabNumberOfConnectedHydrogens(poltype,atom)
             atomisinring=atom.IsInRing()
-            print(atomidx, atomicnum)
+
             if len(sorteduniquetypeneighbsnorepeat)!=0:
                 highestsymneighbnorepeatidx=sorteduniquetypeneighbsnorepeat[0]
                 highestsymneighbnorepeat=mol.GetAtom(highestsymneighbnorepeatidx)
