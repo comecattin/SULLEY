@@ -490,7 +490,7 @@ if __name__ == "__main__":
         "Methane": "C",
         "Phosphine": "P",
         "Arsine": "[AsH3]",
-        "Trimethylamine": "CN(C)C"
+        "Trimethylamine": "N(C)(C)(C)"
     }
     mol = extract_neighbors.load_molecule(molecules["Trimethylamine"])
     generate_local_frame(mol)
