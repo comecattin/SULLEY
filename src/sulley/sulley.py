@@ -7,7 +7,7 @@ Made by C. Cattin 2024
 
 import argparse
 from sulley.extract_neighbors import load_molecule
-from sulley.sulley_main import generate_local_frame
+from sulley.local_frame import generate_local_frame
 
 def main():
     parser = argparse.ArgumentParser(
@@ -31,6 +31,8 @@ def main():
     # Sulley
     mol = load_molecule(args.smiles)
     generate_local_frame(mol=mol, filename=args.output)
+
+    print(f"Local frame written to {args.output}.")
 
 if __name__ == '__main__':
     main()

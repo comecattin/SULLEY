@@ -2,7 +2,7 @@
 from poltype import Poltype
 from openbabel import openbabel
 from multipole import gen_peditinfile
-from sulley.sulley_main import generate_local_frame
+from sulley.local_frame import generate_local_frame
 from sulley.extract_neighbors import load_molecule
 import os
 
