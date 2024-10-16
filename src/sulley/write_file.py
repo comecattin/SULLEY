@@ -92,10 +92,10 @@ def sanitize_local_frame(local_frame):
     for i, atom in enumerate(local_frame):
         if atom == None:
             local_frame[i] = 0
-        elif atom < 0:
-            local_frame[i] -= 1
-        else:
-            local_frame[i] += 1
+        # elif atom < 0:
+        #     local_frame[i] -= 1
+        # else:
+        #     local_frame[i] += 1
     return local_frame 
             
 

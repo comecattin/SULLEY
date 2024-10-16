@@ -24,6 +24,22 @@ def load_molecule(smiles: str):
     mol = Chem.AddHs(mol)
     return mol
 
+def load_molecule_from_sdf(filename: str):
+    """Load a molecule from a file.
+
+    Parameters
+    ----------
+    filename : str
+        Name of the .sdf file.
+
+    Returns
+    -------
+    mol : rdkit.Chem.Mol
+        RDKit molecule object.
+    """
+    mol = Chem.SDMolSupplier(filename, removeHs=False)[0]
+    return mol
+
 def get_bonded_neighbors(mol, atom_idx):
     """Get the bonded neighbors of an atom.
 

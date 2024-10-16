@@ -1,5 +1,5 @@
-from sulley.sulley import symmetry
-from sulley.sulley import extract_neighbors
+from sulley import symmetry
+from sulley import extract_neighbors
 
 def test_symmetry_type_benzene():
     smiles = "C1=CC=CC=C1"
@@ -29,5 +29,5 @@ def test_get_canonical_labels_benzene():
         symmetry_class
     ) = symmetry.get_canonical_labels(mol)
 
-    assert idx_to_sym_class == {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1, 12: 1}
+    assert idx_to_sym_class == {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1}
     assert list(symmetry_class) == [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1]
