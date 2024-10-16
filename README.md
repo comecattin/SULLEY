@@ -26,7 +26,52 @@ SULLEY's approach is intended for applications in fields such as computational c
 
 ## Installation
 
-Instructions for installation will be provided soon.
+To install SULLEY:
+
+1. Clone current repository
+
+   ```bash
+   git clone git@github.com:comecattin/SULLEY.git .
+   ```
+
+2. Navigate to the cloned repository
+
+   ```bash
+   cd SULLEY
+   ```
+
+3. Install application
+
+   ```bash
+   pip install -e .
+   ```
+
+## Using Sulley
+
+To generate local frames for a molecule, use the following arguments:
+
+### Arguments
+
+- `--smiles` : The molecule SMILES to generate the local frame for.
+- `--sdf` : The molecule SDF file to generate the local frame for.
+- `-o`, `--output` : The file to write the local frame to. Default is `local_frame.txt`.
+- `-v`, `--verbose` : Print the local frame to the console.
+- `--debug` : Print debug information. Compare to the Poltype local frame.
+- `-h`, `--help`: Display the CLI help.
+
+### Examples
+
+1. Generate a local frame from a SMILES and write it to the default file:
+
+    ```bash
+    sulley --smiles "CCO"
+    ```
+
+2. Generate a local frame from an SDF file and specify an output file:
+
+    ```bash
+    sulley --sdf molecule.sdf -o output_frame.txt
+    ```
 
 ## Project Status
 
