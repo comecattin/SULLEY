@@ -14,6 +14,7 @@ dependencies = [
    "rdkit",
    "networkx",
    "pytest",
+   "openbabel-wheel",
 ]
 license = {file = "LICENSE"}
 keywords = ["Local Frame", "Geometry", "Equivariant", "Polarisation"]
@@ -34,3 +35,6 @@ classifiers = [
 [project.urls]
 Repository = "https://github.com/comecattin/SULLEY"
 Issues = "https://github.com/comecattin/SULLEY/issues"
+
+[project.scripts]
+sulley = "sulley.sulley:main"
