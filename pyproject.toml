@@ -14,8 +14,7 @@ dependencies = [
    "rdkit",
    "networkx",
    "pytest",
-   "openbabel-wheel==3.1.1.7"
-   "openbabel",
+   "openbabel-wheel",
 ]
 license = {file = "LICENSE"}
 keywords = ["Local Frame", "Geometry", "Equivariant", "Polarisation"]
