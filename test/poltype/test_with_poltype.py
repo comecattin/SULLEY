@@ -3,7 +3,7 @@ from poltype import Poltype
 from openbabel import openbabel
 from multipole import gen_peditinfile
 from sulley.local_frame import generate_local_frame
-from sulley.extract_neighbors import load_molecule, load_molecule_from_sdf
+from sulley.extract_neighbors import load_molecule, load_molecule_from_sdf, load_molecule_from_tinker_xyz
 import os
 
 molecules = {
@@ -137,6 +137,36 @@ def test_aspirin():
     
     # Sulley
     mol = load_molecule_from_sdf(test_path + "structures/aspirin.sdf")
+    generate_local_frame(
+        mol=mol,
+        filename=test_path + "output/aspirin_lf_sulley.txt"
+    )
+
+    assert is_same_local_frame(
+        test_path + "output/aspirin_lf_sulley.txt",
+        test_path + "output/aspirin_lf_poltype.txt"
+    )
+
+def test_aspirin_xyz():
+
+    test_path = os.getcwd() + "/test/poltype/"
+    
+    # Poltype
+    mol = open_sdf_convert_to_mol(
+        test_path + "structures/aspirin.sdf",
+        test_path + "structures/aspirin.mol"
+    )
+    poltype = Poltype(
+        mol,
+        peditinfile=test_path + "output/aspirin_lf_poltype.txt",
+        molstructfname=test_path + "structures/aspirin.mol",
+        paramfile=test_path + "polarize.prm"
+    )
+
+    gen_peditinfile(poltype, mol)
+    
+    # Sulley
+    mol = load_molecule_from_tinker_xyz(test_path + "structures/aspirin.xyz")
     generate_local_frame(
         mol=mol,
         filename=test_path + "output/aspirin_lf_sulley.txt"

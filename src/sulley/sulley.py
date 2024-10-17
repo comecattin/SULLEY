@@ -6,7 +6,7 @@ Made by C. Cattin 2024
 """
 
 import argparse
-from sulley.extract_neighbors import load_molecule, load_molecule_from_sdf
+from sulley.extract_neighbors import load_molecule, load_molecule_from_sdf, load_molecule_from_tinker_xyz
 from sulley.local_frame import generate_local_frame
 
 def main():
@@ -22,6 +22,11 @@ def main():
         '--sdf',
         type=str,
         help='The molecule SDF file to generate the local frame for.'
+    )
+    parser.add_argument(
+        '--xyz',
+        type=str,
+        help='The molecule XYZ Tinker file to generate the local frame for.',
     )
     parser.add_argument(
         '-o',
@@ -45,11 +50,8 @@ def main():
     args = parser.parse_args()
 
     # Check arguments
-    if not args.smiles and not args.sdf:
-        raise ValueError("You must provide a SMILES or SDF file.")
-    
-    if args.smiles and args.sdf:
-        raise ValueError("You must provide either a SMILES or SDF file, not both.")
+    if not args.smiles and not args.sdf and not args.xyz:
+        raise ValueError("You must provide a SMILES or SDF or XYZ file.")
 
 
     # Sulley
@@ -57,6 +59,8 @@ def main():
         mol = load_molecule(args.smiles)
     if args.sdf:
         mol = load_molecule_from_sdf(args.sdf)
+    if args.xyz:
+        mol = load_molecule_from_tinker_xyz(args.xyz)
 
     generate_local_frame(mol=mol, filename=args.output)
 
