@@ -40,6 +40,50 @@ def load_molecule_from_sdf(filename: str):
     mol = Chem.SDMolSupplier(filename, removeHs=False)[0]
     return mol
 
+def parse_tinker_xyz(filename: str):
+    """Parse a Tinker .xyz file.
+
+    Parameters
+    ----------
+    filename : str
+        Name of the .xyz file.
+
+    Returns
+    -------
+    atom : list
+        List of atoms.
+    bonds : list
+        List of bonds.
+    """
+    atom = []
+    bonds = []
+    with open(filename, 'r') as f:
+        for i, line in enumerate(f):
+            if i == 0:
+                num_atoms = int(line.split()[0])
+                continue
+            if line == '\n':
+                continue
+            line = line.strip().split()
+            atom_idx = int(line[0]) - 1
+            atom_type = line[1]
+            x, y, z = map(float, line[2:5])
+            neighbors = [int(neigh) - 1 for neigh in line[6:]]
+            atom.append((atom_type, (x, y, z)))
+
+            for neigh in neighbors:
+                # Avoid duplicates
+                if neigh > atom_idx:
+                    bonds.append((atom_idx, neigh))
+    
+    return atom, bonds
+
+def load_molecule_from_tinker_xyz(filename: str):
+
+    atom, bonds = parse_tinker_xyz(filename)
+    mol = Chem.RWMol()
+    
+
 def get_bonded_neighbors(mol, atom_idx):
     """Get the bonded neighbors of an atom.
 
@@ -222,22 +266,25 @@ def grab_index_from_unique_type_number(atom_list, type_num, idx_to_sym_class):
 
 if __name__ == "__main__":
     
-    import symmetry
+    # import symmetry
 
-    smiles = "C1=CC=CC=C1"
-    mol = load_molecule(smiles)
-    idx_to_sym_class, symmetry_class = symmetry.get_canonical_labels(mol)
+    # smiles = "C1=CC=CC=C1"
+    # mol = load_molecule(smiles)
+    # idx_to_sym_class, symmetry_class = symmetry.get_canonical_labels(mol)
     
-    atom_iter = mol.GetAtoms()
+    # atom_iter = mol.GetAtoms()
     
-    for atom in atom_iter:
+    # for atom in atom_iter:
             
-        atom_index = atom.GetIdx()
-        print('Atom index:',atom_index)
-        atom_neighbors = atom.GetNeighbors()
-        print('Atom neighbors:',[neighbor.GetIdx() for neighbor in atom_neighbors])
+    #     atom_index = atom.GetIdx()
+    #     print('Atom index:',atom_index)
+    #     atom_neighbors = atom.GetNeighbors()
+    #     print('Atom neighbors:',[neighbor.GetIdx() for neighbor in atom_neighbors])
     
-        sorted_unique_neighbors_no_repeat = find_unique_non_repeating_neighbors(atom_neighbors, idx_to_sym_class)
+    #     sorted_unique_neighbors_no_repeat = find_unique_non_repeating_neighbors(atom_neighbors, idx_to_sym_class)
 
         
-        print('Unique neighbors:',sorted_unique_neighbors_no_repeat)
+    #     print('Unique neighbors:',sorted_unique_neighbors_no_repeat)
+
+    xyz = 'test/poltype/structures/aspirin.xyz'
+    mol = load_molecule_from_tinker_xyz(xyz)
