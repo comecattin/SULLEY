@@ -74,7 +74,7 @@ def parse_tinker_xyz(filename: str):
             atom_type = line[1]
             x, y, z = map(float, line[2:5])
             neighbors = [int(neigh) - 1 for neigh in line[6:]]
-            atom.append((atom_type, (x, y, z)))
+            atom.append((atom_type, (x, y, z), atom_idx))
 
             for neigh in neighbors:
                 # Avoid duplicates
@@ -123,19 +123,21 @@ def load_molecule_from_tinker_xyz(filename: str):
     mol = Chem.RWMol()
 
     # Add atoms to the molecule
-    atom_idx = []
-    for atom_type, coords in atom:
+    xyz_to_rdkit_idx = {}
+    for atom_type, coords, xyz_idx in atom:
         atomic_num = atom_type_to_atomic_num[atom_type]
         idx = mol.AddAtom(Chem.Atom(atomic_num))
-        atom_idx.append(idx)
+        xyz_to_rdkit_idx[xyz_idx] = idx
 
     # Add bonds to the molecule
     for idx1, idx2 in bonds:
+        idx1 = xyz_to_rdkit_idx[idx1]
+        idx2 = xyz_to_rdkit_idx[idx2]
         mol.AddBond(idx1, idx2, Chem.rdchem.BondType.SINGLE)
 
     # Set 3D coordinates
     conf = Chem.Conformer(len(atom))
-    for i, (_, (x, y, z)) in enumerate(atom):
+    for i, (_, (x, y, z), index) in enumerate(atom):
         conf.SetAtomPosition(i, (x, y, z))
     mol.AddConformer(conf)
 
@@ -349,5 +351,5 @@ if __name__ == "__main__":
         
     #     print('Unique neighbors:',sorted_unique_neighbors_no_repeat)
 
-    xyz = 'test/poltype/structures/aspirin.xyz'
+    xyz = 'aspirin.xyz'
     mol = load_molecule_from_tinker_xyz(xyz)
