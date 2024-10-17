@@ -139,6 +139,10 @@ def load_molecule_from_tinker_xyz(filename: str):
         conf.SetAtomPosition(i, (x, y, z))
     mol.AddConformer(conf)
 
+    for atom in mol.GetAtoms():
+        atom.SetNoImplicit(True)
+        atom.UpdatePropertyCache(strict=False)
+
     return mol.GetMol()
      
 
