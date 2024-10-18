@@ -61,6 +61,15 @@ def main():
         mol = load_molecule_from_sdf(args.sdf)
     if args.xyz:
         mol = load_molecule_from_tinker_xyz(args.xyz)
+        if type(mol) is list:
+            for i, m in enumerate(mol):
+                print(f"Generating local frame for molecule {i+1}...")
+                generate_local_frame(
+                    mol=m,
+                    filename=args.output.replace(".txt", f"_{i+1}.txt")
+                )
+                print(f"Local frame written to {args.output.replace('.txt', f'_{i+1}.txt')}.")
+            return
 
     generate_local_frame(mol=mol, filename=args.output)
 

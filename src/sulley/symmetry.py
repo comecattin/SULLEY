@@ -65,6 +65,61 @@ def get_canonical_labels(mol, start_idx:int = 0):
 
     return idx_to_sym_class, symmetry_class
 
+def create_graph(mol):
+    """Create a graph from a molecule.
+
+    Parameters
+    ----------
+    mol : rdkit.Chem.Mol
+        RDKit molecule object.
+    
+    Returns
+    -------
+    nx.Graph
+        NetworkX graph object.
+    """
+
+    graph = nx.Graph()
+
+    # Add nodes
+    for atom in mol.GetAtoms():
+        graph.add_nodes_from(
+            [(atom.GetIdx(), {"atomic_num": atom.GetAtomicNum()})]
+        )
+
+    # Add edges
+    for bond in mol.GetBonds():
+        graph.add_edge(
+            bond.GetBeginAtomIdx(),
+            bond.GetEndAtomIdx(),
+        )
+    
+    return graph
+
+def split_disconnected_graphs(graph):
+    """Split a graph into disconnected subgraphs.
+
+    Parameters
+    ----------
+    graph : nx.Graph
+        NetworkX graph object.
+    
+    Returns
+    -------
+    list
+        List of disconnected subgraphs.
+    """
+
+    connected = nx.connected_components(graph)
+    subgraphs = []
+    for nodes in connected:
+        subgraph = graph.subgraph(nodes)
+        subgraphs.append(subgraph)
+
+    return subgraphs
+    
+
+
 def compute_symmetry_type(mol):
     """Define the symmetry type of a molecule by a graph invariant vector.
     
@@ -83,21 +138,7 @@ def compute_symmetry_type(mol):
     n_atoms = mol.GetNumAtoms()
     index_to_matching_indices = {i: [i] for i in range(n_atoms)}
 
-    # Create the graph
-    graph = nx.Graph()
-
-    # Add nodes
-    for atom in mol.GetAtoms():
-        graph.add_nodes_from(
-            [(atom.GetIdx(), {"atomic_num": atom.GetAtomicNum()})]
-        )
-
-    # Add edges
-    for bond in mol.GetBonds():
-        graph.add_edge(
-            bond.GetBeginAtomIdx(),
-            bond.GetEndAtomIdx(),
-        )
+    graph = create_graph(mol)
     
     # Get nodes attributes
     atomic_nums = nx.get_node_attributes(graph, "atomic_num")
