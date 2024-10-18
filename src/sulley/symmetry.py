@@ -95,6 +95,28 @@ def create_graph(mol):
         )
     
     return graph
+
+def split_disconnected_graphs(graph):
+    """Split a graph into disconnected subgraphs.
+
+    Parameters
+    ----------
+    graph : nx.Graph
+        NetworkX graph object.
+    
+    Returns
+    -------
+    list
+        List of disconnected subgraphs.
+    """
+
+    connected = nx.connected_components(graph)
+    subgraphs = []
+    for nodes in connected:
+        subgraph = graph.subgraph(nodes)
+        subgraphs.append(subgraph)
+
+    return subgraphs
     
 
 
