@@ -17,6 +17,7 @@ from collections import Counter
 def generate_local_frame(mol, filename="local_frame.txt"):
 
     # Get the conformer
+    mol.UpdatePropertyCache()
     AllChem.EmbedMolecule(mol)
     conf = mol.GetConformer(0)
 
