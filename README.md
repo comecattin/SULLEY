@@ -54,7 +54,7 @@ To generate local frames for a molecule, use the following arguments:
 
 - `--smiles` : The molecule SMILES to generate the local frame for.
 - `--sdf` : The molecule SDF file to generate the local frame for.
-- `--xyz` : The molecule Tinker XYZ file to generate the local frame for.
+- `--xyz` : The molecule Tinker XYZ file to generate the local frame for. Multiple molecules can be given in the same XYZ file.
 - `-o`, `--output` : The file to write the local frame to. Default is `local_frame.txt`.
 - `-v`, `--verbose` : Print the local frame to the console.
 - `--debug` : Print debug information. Compare to the Poltype local frame.
