@@ -6,6 +6,8 @@ Made by C. Cattin, 2024.
 
 from rdkit import Chem
 from rdkit.Chem import rdDetermineBonds
+from sulley.symmetry import create_graph, split_disconnected_graphs
+import networkx as nx
 
 def load_molecule(smiles: str):
     """Load a molecule from a SMILES string.
@@ -96,8 +98,8 @@ def load_molecule_from_tinker_xyz(filename: str):
 
     Returns
     -------
-    mol : rdkit.Chem.Mol
-        RDKit molecule object.
+    mol : rdkit.Chem.Mol or list
+        RDKit molecule object or list of RDKit molecule objects.
     """
 
     atom_type_to_atomic_num = {
@@ -145,8 +147,66 @@ def load_molecule_from_tinker_xyz(filename: str):
         atom.SetNoImplicit(True)
         atom.UpdatePropertyCache(strict=False)
 
+    
+    # If multiple molecules are present return list of molecules
+    if not is_single_molecule(mol):
+        graph = create_graph(mol)
+        sub_graph = split_disconnected_graphs(graph)
+        mols = []
+        last_node_idx = 0
+        for graph in sub_graph:
+            mols.append(
+                load_molecule_from_graph(graph, shift=last_node_idx)
+            )
+            last_node_idx += len(graph.nodes)
+
+        return mols
+        
     return mol.GetMol()
-     
+
+def is_single_molecule(mol):
+    """Check if a molecule is a single molecule.
+
+    Parameters
+    ----------
+    mol : rdkit.Chem.Mol
+        RDKit molecule object.
+
+    Returns
+    -------
+    bool
+        True if the molecule is a single molecule.
+    """
+
+
+    graph = create_graph(mol)
+    return nx.is_connected(graph)
+
+
+def load_molecule_from_graph(graph, shift = 0):
+    """Load a molecule from a graph.
+
+    Parameters
+    ----------
+    graph : nx.Graph
+        NetworkX graph object.
+
+    Returns
+    -------
+    mol : rdkit.Chem.Mol
+        RDKit molecule object.
+    """
+    mol = Chem.RWMol()
+    for node in graph.nodes(data=True):
+        atomic_num = node[1]['atomic_num']
+        mol.AddAtom(Chem.Atom(atomic_num))
+    for edge in graph.edges():
+        mol.AddBond(
+            edge[0] - shift,
+            edge[1] - shift, 
+            Chem.rdchem.BondType.SINGLE
+        )
+    return mol.GetMol()
 
 
 def get_bonded_neighbors(mol, atom_idx):
@@ -353,3 +413,4 @@ if __name__ == "__main__":
 
     xyz = 'aspirin.xyz'
     mol = load_molecule_from_tinker_xyz(xyz)
+    is_single_mol = is_single_molecule(mol)
