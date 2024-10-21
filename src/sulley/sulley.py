@@ -64,14 +64,14 @@ def main():
         if type(mol) is list:
             for i, m in enumerate(mol):
                 print(f"Generating local frame for molecule {i+1}...")
-                generate_local_frame(
+                local_frame = generate_local_frame(
                     mol=m,
                     filename=args.output.replace(".txt", f"_{i+1}.txt")
                 )
                 print(f"Local frame written to {args.output.replace('.txt', f'_{i+1}.txt')}.")
-            return
+            return local_frame
 
-    generate_local_frame(mol=mol, filename=args.output)
+    local_frame = generate_local_frame(mol=mol, filename=args.output)
 
     print(f"Local frame written to {args.output}.")
 
@@ -101,6 +101,9 @@ def main():
             print("-------------")
             with open("temp_poltype.txt", 'r') as f:
                 print(f.read())
+        
+
+    return local_frame
 
     
 

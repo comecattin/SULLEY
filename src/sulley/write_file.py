@@ -36,6 +36,8 @@ def write_peditin_file(
     local_frame1 = sanitize_local_frame(local_frame1)
     local_frame2 = sanitize_local_frame(local_frame2)
 
+    output_local_frame = []
+
     f = open(filename, 'w')
 
     for atom in mol.GetAtoms():
@@ -51,6 +53,13 @@ def write_peditin_file(
                 str(local_frame1[atom_idx]) + " " +
                 str(local_frame2[atom_idx]) + "\n"
             )
+            output_local_frame.append(
+                [
+                    atom_idx + 1,
+                    local_frame1[atom_idx],
+                    local_frame2[atom_idx]
+                ]
+            )
         
         # Bisection then z-axis
         elif (
@@ -64,6 +73,14 @@ def write_peditin_file(
                 str(bisec_idx[0] + 1) + " -" +
                 str(bisec_idx[1] + 1) + "\n"
             )
+            output_local_frame.append(
+                [
+                    atom_idx + 1,
+                    local_frame1[atom_idx],
+                    -(bisec_idx[0] + 1),
+                    -(bisec_idx[1] + 1)
+                ]
+            )
         
         # Trisection
         else:
@@ -75,6 +92,17 @@ def write_peditin_file(
                 str(trisec_idx[1] + 1) + " -" +
                 str(trisec_idx[2] + 1) + "\n"
             )
+            output_local_frame.append(
+                [
+                    atom_idx + 1,
+                    -(trisec_idx[0] + 1),
+                    -(trisec_idx[1] + 1),
+                    -(trisec_idx[2] + 1)
+                ]
+            )
+    
+    f.close()
+    return output_local_frame
 
 def sanitize_local_frame(local_frame):
     """Shift the local frame indices to start at 1.
