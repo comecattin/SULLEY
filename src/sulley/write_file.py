@@ -90,7 +90,7 @@ def sanitize_local_frame(local_frame):
         Local frame shifted.
     """
     for i, atom in enumerate(local_frame):
-        if atom == None:
+        if atom is None:
             local_frame[i] = 0
         # elif atom < 0:
         #     local_frame[i] -= 1

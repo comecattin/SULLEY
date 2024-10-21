@@ -5,7 +5,6 @@ Made by C. Cattin, 2024.
 """
 
 from rdkit import Chem
-from rdkit.Chem import rdDetermineBonds
 from sulley.symmetry import create_graph, split_disconnected_graphs
 import networkx as nx
 

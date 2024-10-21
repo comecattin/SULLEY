@@ -8,8 +8,6 @@ Made by C. Cattin, 2024.
 from sulley import symmetry
 from sulley import extract_neighbors
 from sulley import write_file
-from itertools import permutations
-from rdkit import Chem
 from rdkit.Chem import rdMolTransforms
 from rdkit.Chem import AllChem
 from collections import Counter
@@ -32,7 +30,7 @@ def generate_local_frame(mol, filename="local_frame.txt"):
     atom_iter = mol.GetAtoms()
 
     # Get the symmetry class of the atoms
-    idx_to_sym_class, symmetry_class = symmetry.get_canonical_labels(mol)
+    idx_to_sym_class, _symmetry_class = symmetry.get_canonical_labels(mol)
 
     for atom in atom_iter:
 
@@ -94,7 +92,7 @@ def generate_local_frame(mol, filename="local_frame.txt"):
             )
 
             # Neighbors without the atom
-            atom_neighbors_without_atom = extract_neighbors.remove_from_list(atom_neighbors, atom)
+            #atom_neighbors_without_atom = extract_neighbors.remove_from_list(atom_neighbors, atom)
 
 
             #~~~~~~~~~~~~~~~~~~~~~~~#
@@ -136,7 +134,7 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                     atom,
                     highest_sym_neighbor_neighbors_without_atom,
                     idx_to_sym_class
-                ) == False
+                ) is False
             ):
                 local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0] + 1
                 #local_frame2[atom_index] = 0
@@ -287,7 +285,7 @@ def generate_local_frame(mol, filename="local_frame.txt"):
         #---------------#
         # General cases #
         #---------------#
-        if is_found_case == False:
+        if is_found_case is False:
             first_neighbors = atom_neighbors[0].GetNeighbors()
 
             # Like H in methane => Z-only
