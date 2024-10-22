@@ -106,7 +106,6 @@ def cli():
     )
 
     args = parser.parse_args()
-    print(args)
 
     main(args=args)
 
