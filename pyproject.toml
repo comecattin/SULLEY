@@ -37,4 +37,4 @@ Repository = "https://github.com/comecattin/SULLEY"
 Issues = "https://github.com/comecattin/SULLEY/issues"
 
 [project.scripts]
-sulley = "sulley.sulley:main"
+sulley = "sulley.sulley:cli"

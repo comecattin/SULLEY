@@ -9,45 +9,7 @@ import argparse
 from sulley.extract_neighbors import load_molecule, load_molecule_from_sdf, load_molecule_from_tinker_xyz
 from sulley.local_frame import generate_local_frame
 
-def main():
-    parser = argparse.ArgumentParser(
-        description='Generate local frames for a molecule.'
-    )
-    parser.add_argument(
-        '--smiles',
-        type=str,
-        help='The molecule SMILES to generate the local frame for.'
-    )
-    parser.add_argument(
-        '--sdf',
-        type=str,
-        help='The molecule SDF file to generate the local frame for.'
-    )
-    parser.add_argument(
-        '--xyz',
-        type=str,
-        help='The molecule XYZ Tinker file to generate the local frame for.',
-    )
-    parser.add_argument(
-        '-o',
-        '--output',
-        type=str,
-        help='The file to write the local frame to. Default is local_frame.txt.',
-        default='local_frame.txt',
-    )
-    parser.add_argument(
-        '-v',
-        '--verbose',
-        action='store_true',
-        help='Print the local frame to the console.'
-    )
-    parser.add_argument(
-        '--debug',
-        action='store_true',
-        help='Print debug information. Compare to the Poltype local frame.',
-    )
-
-    args = parser.parse_args()
+def main(args=None):
 
     # Check arguments
     if not args.smiles and not args.sdf and not args.xyz:
@@ -105,7 +67,50 @@ def main():
 
     return local_frame
 
+def cli():
+    parser = argparse.ArgumentParser(
+        description='Generate local frames for a molecule.'
+    )
+    parser.add_argument(
+        '--smiles',
+        type=str,
+        help='The molecule SMILES to generate the local frame for.'
+    )
+    parser.add_argument(
+        '--sdf',
+        type=str,
+        help='The molecule SDF file to generate the local frame for.'
+    )
+    parser.add_argument(
+        '--xyz',
+        type=str,
+        help='The molecule XYZ Tinker file to generate the local frame for.',
+    )
+    parser.add_argument(
+        '-o',
+        '--output',
+        type=str,
+        help='The file to write the local frame to. Default is local_frame.txt.',
+        default='local_frame.txt',
+    )
+    parser.add_argument(
+        '-v',
+        '--verbose',
+        action='store_true',
+        help='Print the local frame to the console.'
+    )
+    parser.add_argument(
+        '--debug',
+        action='store_true',
+        help='Print debug information. Compare to the Poltype local frame.',
+    )
+
+    args = parser.parse_args()
+    print(args)
+
+    main(args=args)
+
     
 
 if __name__ == '__main__':
-    main()
+    pass
