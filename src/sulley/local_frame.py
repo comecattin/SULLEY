@@ -91,10 +91,6 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                 )
             )
 
-            # Neighbors without the atom
-            #atom_neighbors_without_atom = extract_neighbors.remove_from_list(atom_neighbors, atom)
-
-
             #~~~~~~~~~~~~~~~~~~~~~~~#
             #    Check atom Type    #
             #~~~~~~~~~~~~~~~~~~~~~~~#
@@ -106,7 +102,6 @@ def generate_local_frame(mol, filename="local_frame.txt"):
             # Special case for N_2 => Z-only
             if atomic_num == 7 and valence == 1:
                 local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0] + 1
-                #local_frame2[atom_index] = 0
                 is_found_case = True
             
             # Like H on amonia => Z-then-bisec
@@ -137,7 +132,6 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                 ) is False
             ):
                 local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0] + 1
-                #local_frame2[atom_index] = 0
                 is_found_case = True
 
             # Like methyl-amine => Z-then-bisec
@@ -255,7 +249,6 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                 and len(highest_sym_neighbor_unique_neighbors_type_without_atom) ==1
             ):
                 local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0] + 1
-                #local_frame2[atom_index] = 0
                 is_found_case = True
             
             # Like H on iodine => Z-only
@@ -265,7 +258,6 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                 and len(unique_neighbors_type) == 1
             ):
                 local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0] + 1
-                #local_frame2[atom_index] = 0
                 is_found_case = True
 
             # Like N(CH3)(CH3)(CH3)H => Z-only
@@ -278,7 +270,6 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                 )
             ):
                 local_frame1[atom_index] = highest_sym_neighbor_idx + 1
-                #local_frame2[atom_index] = 0
                 is_found_case = True
         
 
@@ -297,7 +288,6 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                 and len(first_neighbors) == 4
             ):
                 local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0] + 1
-                #local_frame2[atom_index] = 0
                 is_found_case = True
             
             # Like C in methane => Z-only
@@ -310,7 +300,6 @@ def generate_local_frame(mol, filename="local_frame.txt"):
             ):
                 idx_list = extract_neighbors.grab_index_from_unique_type_number(atom_neighbors, unique_neighbors_type[0], idx_to_sym_class)
                 local_frame1[atom_index] = idx_list[0] + 1
-                #local_frame2[atom_index] = 0
             
             # Like N in ammonia => trisect
             elif (
@@ -324,7 +313,7 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                 trisec_idx = [neighbors.GetIdx() for neighbors in atom_neighbors]
                 idx_to_trisec_idx[atom_index] = trisec_idx
 
-            # Like middle C in propane or O in H2O => ~Z-only
+            # Like middle C in propane or O in H2O => Bisector
             elif (
                 (
                     valence == 2
@@ -351,9 +340,8 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                 and not is_in_a_ring
             ):
                 local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0] + 1
-                #local_frame2[atom_index] = 0
             
-            # Like benzene, C on aniline => ~Z-only
+            # Like benzene, C on aniline => Bisector
             elif (
                 len(unique_neighbors_type) == 2
                 and valence == 3
@@ -401,17 +389,16 @@ def generate_local_frame(mol, filename="local_frame.txt"):
                     # The molecule is linear => Z-only
                     if is_linear:
                         local_frame1[atom_index] = sorted_unique_neighbors_no_repeat[0] + 1
-                        #local_frame2[atom_index] = 0
                         is_found_case = True
                 
                 # No unique neighbors found => Z-only
                 else:
                     local_frame1[atom_index] = neighbors_idx[0] + 1
-                    #local_frame2[atom_index] = 0
                     is_found_case = True
                     continue
 
                 
+                # Most general case => Z-then-X
                 # Use the first most unique neighbor
                 
                 sorted_unique_neighbors_no_repeat_types = [
