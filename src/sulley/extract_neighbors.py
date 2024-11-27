@@ -149,19 +149,36 @@ def load_molecule_from_tinker_xyz(filename: str):
     
     # If multiple molecules are present return list of molecules
     if not is_single_molecule(mol):
-        graph = create_graph(mol)
-        sub_graph = split_disconnected_graphs(graph)
-        mols = []
-        last_node_idx = 0
-        for graph in sub_graph:
-            mols.append(
-                load_molecule_from_graph(graph, shift=last_node_idx)
-            )
-            last_node_idx += len(graph.nodes)
-
+        mols = split_multimolecules(mol)
         return mols
         
     return mol.GetMol()
+
+def split_multimolecules(mol):
+    """Split a molecule into multiple molecules.
+
+    Parameters
+    ----------
+    mol : rdkit.Chem.Mol
+        RDKit molecule object.
+    
+    Returns
+    -------
+    mols : list
+        List of RDKit molecule objects.
+
+    """
+    graph = create_graph(mol)
+    sub_graph = split_disconnected_graphs(graph)
+    mols = []
+    last_node_idx = 0
+    for graph in sub_graph:
+        mols.append(
+            load_molecule_from_graph(graph, shift=last_node_idx)
+        )
+        last_node_idx += len(graph.nodes)
+    
+    return mols
 
 def is_single_molecule(mol):
     """Check if a molecule is a single molecule.
