@@ -5,13 +5,22 @@ import networkx as nx
 import networkx.algorithms.isomorphism as iso
 from collections import defaultdict
 
-def get_canonical_labels(mol, start_idx:int = 0):
+def get_canonical_labels(
+        mol,
+        use_ecfp:bool = False,
+        radius:int = None,
+        start_idx:int = 0
+    ):
     """Get the canonical labels of the atoms in a molecule.
 
     Parameters
     ----------
     mol : rdkit.Chem.Mol
         RDKit molecule object.
+    use_ecfp : bool, optional
+        Use the ECFP method to compute the symmetry classes, by default False
+    radius : int, optional
+        Radius of the ECFP, by default 3
     start_idx : int, optional
         Starting index for the symmetry classes, by default 0
     
@@ -22,6 +31,9 @@ def get_canonical_labels(mol, start_idx:int = 0):
     symmetry_class : list
         List of symmetry classes.
     """
+
+    if use_ecfp:
+        index_to_matching_indices = compute_symmetry_type_ecfp(mol, radius=radius)
 
     index_to_matching_indices = compute_symmetry_type(mol)
 

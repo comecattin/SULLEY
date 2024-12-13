@@ -12,7 +12,7 @@ from rdkit.Chem import rdMolTransforms
 from rdkit.Chem import AllChem
 from collections import Counter
 
-def generate_local_frame(mol, filename="local_frame.txt"):
+def generate_local_frame(mol, filename="local_frame.txt", use_ecfp=False, radius=3):
 
     # Get the conformer
     mol.UpdatePropertyCache()
@@ -30,7 +30,7 @@ def generate_local_frame(mol, filename="local_frame.txt"):
     atom_iter = mol.GetAtoms()
 
     # Get the symmetry class of the atoms
-    idx_to_sym_class, _symmetry_class = symmetry.get_canonical_labels(mol)
+    idx_to_sym_class, _symmetry_class = symmetry.get_canonical_labels(mol, use_ecfp=use_ecfp, radius=radius)
 
     for atom in atom_iter:
 
