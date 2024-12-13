@@ -3,6 +3,7 @@
 
 import networkx as nx
 import networkx.algorithms.isomorphism as iso
+from collections import defaultdict
 
 def get_canonical_labels(mol, start_idx:int = 0):
     """Get the canonical labels of the atoms in a molecule.
@@ -204,6 +205,83 @@ def compute_symmetry_type(mol):
                     index_to_matching_indices[node2].append(node1)
     
     return index_to_matching_indices
+
+def compute_ecfp(species, attached_hydrogens, is_in_ring, neighbors, radius=3):
+    """Compute the ECFP invariants of a molecule.
+
+    Parameters
+    ----------
+    species : list
+        List of atomic numbers.
+    attached_hydrogens : list
+        List of the number of attached hydrogens.
+    is_in_ring : list
+        List of booleans indicating if the atom is in a ring.
+    neighbors : list
+        List of list of neighbors.
+    radius : int, optional
+        Radius of the ECFP, by default 3.
+    """
+    identifiers = []
+    # Iteration 0
+    for i in range(len(species)):
+        identifier_init = get_hash(
+            [
+                len(neighbors[i]),
+                species[i],
+                attached_hydrogens[i],
+                is_in_ring[i],
+            ]
+        )
+        identifiers.append(identifier_init)
+
+    # Iteration 1 to radius
+    for layer in range(radius):
+        new_identifiers = []
+        for i in range(len(species)):
+            atom_new_identifier = [layer,identifiers[i]]+[identifiers[j] for j in sorted(neighbors[i])]
+            new_identifiers.append(get_hash(atom_new_identifier))
+        identifiers = new_identifiers
+
+    return identifiers
+
+def get_hash(args):
+    """Get the hash of a tuple."""
+    return hash(tuple(args))
+
+def symetrize_charges(mol, sym):
+    """Symetrize the charges of a molecule.
+
+    Parameters
+    ----------
+    mol : rdkit.Chem.Mol
+        RDKit molecule object.
+    sym : list
+        List of symmetry classes.
+
+    Returns
+    -------
+    qsym : list
+        List of symetrized charges.
+    formal_charges : list
+        List of formal charges.
+    """
+    
+    qsum = defaultdict(float)
+    qcount = defaultdict(int)
+    formal_charges = [0] * len(sym)
+    for atom in mol.GetAtoms():
+        charge = atom.GetFormalCharge()
+        qsum[sym[atom.GetIdx()]] += charge
+        qcount[sym[atom.GetIdx()]] += 1
+        formal_charges[atom.GetIdx()] = charge
+    
+    qsym = [0] * len(sym)
+    for atom in mol.GetAtoms():
+        i = atom.GetIdx()
+        qsym[i] = qsum[sym[i]] / qcount[sym[i]]
+
+    return qsym, formal_charges
 
 
 
