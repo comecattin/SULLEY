@@ -219,6 +219,8 @@ def compute_symmetry_type(mol):
                 if node1 not in index_to_matching_indices[node2]:
                     index_to_matching_indices[node2].append(node1)
     
+    index_to_matching_indices = {k: sorted(v) for k, v in index_to_matching_indices.items()}
+
     return index_to_matching_indices
 
 def compute_symmetry_type_ecfp(mol, radius=3):
@@ -264,7 +266,7 @@ def compute_symmetry_type_ecfp(mol, radius=3):
     n_atoms = len(species)
     index_to_matching_indices = {}
     for i in range(n_atoms):
-        index_to_matching_indices[i] = [j for j in range(n_atoms) if sym[j] == sym[i]]
+        index_to_matching_indices[i] = sorted([j for j in range(n_atoms) if sym[j] == sym[i]])
     
     return index_to_matching_indices
     
