@@ -134,6 +134,9 @@ def compute_symmetry_type(mol):
     Returns
     -------
 
+    index_to_matching_indices : dict
+        Dictionary of the atom index to the list of matching indices.
+
     """
 
     n_atoms = mol.GetNumAtoms()
@@ -205,6 +208,54 @@ def compute_symmetry_type(mol):
                     index_to_matching_indices[node2].append(node1)
     
     return index_to_matching_indices
+
+def compute_symmetry_type_ecfp(mol, radius=3):
+    """Define the symmetry type of a molecule by a ECFP.
+    
+    If two atoms have the same ECFP then they have the same type.
+    This method is much faster than the graph invariant vector method.
+
+    Parameters
+    ----------
+    mol : rdkit.Chem.Mol
+        RDKit molecule object.
+
+    radius : int, optional
+        Radius of the ECFP, by default 3.
+    
+    Returns
+    -------
+
+    index_to_matching_indices : dict
+        Dictionary of the atom index to the list of matching indices.
+
+    """
+
+    # Get ECFP atom properties
+    atom_bonded = []
+    species = []
+    attached_hydrogens = []
+    is_in_ring = []
+
+    for atom in mol.GetAtoms():
+        species.append(atom.GetAtomicNum())
+        attached_hydrogens.append(atom.GetTotalNumHs())
+        is_in_ring.append(atom.IsInRing())
+        neighbors_index = [neighbor.GetIdx() for neighbor in atom.GetNeighbors()]
+        atom_bonded.append(neighbors_index)
+
+    # Compute the ECFP
+    ecfp = compute_ecfp(species, attached_hydrogens, is_in_ring, atom_bonded, radius=radius)
+    ecfp_set = set(ecfp)
+    d_ecfp = {k: v for v, k in enumerate(ecfp_set)}
+    sym = [d_ecfp[k] for k in ecfp]
+    n_atoms = len(species)
+    index_to_matching_indices = {}
+    for i in range(n_atoms):
+        index_to_matching_indices[i] = [j for j in range(n_atoms) if sym[j] == sym[i]]
+    
+    return index_to_matching_indices
+    
 
 def compute_ecfp(species, attached_hydrogens, is_in_ring, neighbors, radius=3):
     """Compute the ECFP invariants of a molecule.
