@@ -14,6 +14,8 @@ def main(args=None):
     # Check arguments
     if not args.smiles and not args.sdf and not args.xyz:
         raise ValueError("You must provide a SMILES or SDF or XYZ file.")
+    if args.use_ecfp and not args.radius:
+        raise ValueError("You must provide a radius for the ECFP method.")
 
 
     # Sulley
@@ -28,12 +30,14 @@ def main(args=None):
                 print(f"Generating local frame for molecule {i+1}...")
                 local_frame = generate_local_frame(
                     mol=m,
-                    filename=args.output.replace(".txt", f"_{i+1}.txt")
+                    filename=args.output.replace(".txt", f"_{i+1}.txt"),
+                    use_ecfp=args.use_ecfp,
+                    radius=args.radius,
                 )
                 print(f"Local frame written to {args.output.replace('.txt', f'_{i+1}.txt')}.")
             return local_frame
 
-    local_frame = generate_local_frame(mol=mol, filename=args.output)
+    local_frame = generate_local_frame(mol=mol, filename=args.output, use_ecfp=args.use_ecfp, radius=args.radius)
 
     print(f"Local frame written to {args.output}.")
 
@@ -92,6 +96,17 @@ def cli():
         type=str,
         help='The file to write the local frame to. Default is local_frame.txt.',
         default='local_frame.txt',
+    )
+    parser.add_argument(
+        '--use_ecfp',
+        action='store_true',
+        help='Use ECFP for faster symmetry class computation.'
+    )
+    parser.add_argument(
+        '--radius',
+        type=int,
+        help='The ECFP radius. Default is 3.',
+        default=3,
     )
     parser.add_argument(
         '-v',

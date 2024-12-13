@@ -3,14 +3,24 @@
 
 import networkx as nx
 import networkx.algorithms.isomorphism as iso
+from collections import defaultdict
 
-def get_canonical_labels(mol, start_idx:int = 0):
+def get_canonical_labels(
+        mol,
+        use_ecfp:bool = False,
+        radius:int = None,
+        start_idx:int = 0
+    ):
     """Get the canonical labels of the atoms in a molecule.
 
     Parameters
     ----------
     mol : rdkit.Chem.Mol
         RDKit molecule object.
+    use_ecfp : bool, optional
+        Use the ECFP method to compute the symmetry classes, by default False
+    radius : int, optional
+        Radius of the ECFP, by default 3
     start_idx : int, optional
         Starting index for the symmetry classes, by default 0
     
@@ -21,6 +31,9 @@ def get_canonical_labels(mol, start_idx:int = 0):
     symmetry_class : list
         List of symmetry classes.
     """
+
+    if use_ecfp:
+        index_to_matching_indices = compute_symmetry_type_ecfp(mol, radius=radius)
 
     index_to_matching_indices = compute_symmetry_type(mol)
 
@@ -133,6 +146,9 @@ def compute_symmetry_type(mol):
     Returns
     -------
 
+    index_to_matching_indices : dict
+        Dictionary of the atom index to the list of matching indices.
+
     """
 
     n_atoms = mol.GetNumAtoms()
@@ -203,7 +219,134 @@ def compute_symmetry_type(mol):
                 if node1 not in index_to_matching_indices[node2]:
                     index_to_matching_indices[node2].append(node1)
     
+    index_to_matching_indices = {k: sorted(v) for k, v in index_to_matching_indices.items()}
+
     return index_to_matching_indices
+
+def compute_symmetry_type_ecfp(mol, radius=3):
+    """Define the symmetry type of a molecule by a ECFP.
+    
+    If two atoms have the same ECFP then they have the same type.
+    This method is much faster than the graph invariant vector method.
+
+    Parameters
+    ----------
+    mol : rdkit.Chem.Mol
+        RDKit molecule object.
+
+    radius : int, optional
+        Radius of the ECFP, by default 3.
+    
+    Returns
+    -------
+
+    index_to_matching_indices : dict
+        Dictionary of the atom index to the list of matching indices.
+
+    """
+
+    # Get ECFP atom properties
+    atom_bonded = []
+    species = []
+    attached_hydrogens = []
+    is_in_ring = []
+
+    for atom in mol.GetAtoms():
+        species.append(atom.GetAtomicNum())
+        attached_hydrogens.append(atom.GetTotalNumHs())
+        is_in_ring.append(atom.IsInRing())
+        neighbors_index = [neighbor.GetIdx() for neighbor in atom.GetNeighbors()]
+        atom_bonded.append(neighbors_index)
+
+    # Compute the ECFP
+    ecfp = compute_ecfp(species, attached_hydrogens, is_in_ring, atom_bonded, radius=radius)
+    ecfp_set = set(ecfp)
+    d_ecfp = {k: v for v, k in enumerate(ecfp_set)}
+    sym = [d_ecfp[k] for k in ecfp]
+    n_atoms = len(species)
+    index_to_matching_indices = {}
+    for i in range(n_atoms):
+        index_to_matching_indices[i] = sorted([j for j in range(n_atoms) if sym[j] == sym[i]])
+    
+    return index_to_matching_indices
+    
+
+def compute_ecfp(species, attached_hydrogens, is_in_ring, neighbors, radius=3):
+    """Compute the ECFP invariants of a molecule.
+
+    Parameters
+    ----------
+    species : list
+        List of atomic numbers.
+    attached_hydrogens : list
+        List of the number of attached hydrogens.
+    is_in_ring : list
+        List of booleans indicating if the atom is in a ring.
+    neighbors : list
+        List of list of neighbors.
+    radius : int, optional
+        Radius of the ECFP, by default 3.
+    """
+    identifiers = []
+    # Iteration 0
+    for i in range(len(species)):
+        identifier_init = get_hash(
+            [
+                len(neighbors[i]),
+                species[i],
+                attached_hydrogens[i],
+                is_in_ring[i],
+            ]
+        )
+        identifiers.append(identifier_init)
+
+    # Iteration 1 to radius
+    for layer in range(radius):
+        new_identifiers = []
+        for i in range(len(species)):
+            atom_new_identifier = [layer,identifiers[i]]+[identifiers[j] for j in sorted(neighbors[i])]
+            new_identifiers.append(get_hash(atom_new_identifier))
+        identifiers = new_identifiers
+
+    return identifiers
+
+def get_hash(args):
+    """Get the hash of a tuple."""
+    return hash(tuple(args))
+
+def symetrize_charges(mol, sym):
+    """Symetrize the charges of a molecule.
+
+    Parameters
+    ----------
+    mol : rdkit.Chem.Mol
+        RDKit molecule object.
+    sym : list
+        List of symmetry classes.
+
+    Returns
+    -------
+    qsym : list
+        List of symetrized charges.
+    formal_charges : list
+        List of formal charges.
+    """
+    
+    qsum = defaultdict(float)
+    qcount = defaultdict(int)
+    formal_charges = [0] * len(sym)
+    for atom in mol.GetAtoms():
+        charge = atom.GetFormalCharge()
+        qsum[sym[atom.GetIdx()]] += charge
+        qcount[sym[atom.GetIdx()]] += 1
+        formal_charges[atom.GetIdx()] = charge
+    
+    qsym = [0] * len(sym)
+    for atom in mol.GetAtoms():
+        i = atom.GetIdx()
+        qsym[i] = qsum[sym[i]] / qcount[sym[i]]
+
+    return qsym, formal_charges
 
 
 
