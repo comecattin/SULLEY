@@ -68,6 +68,8 @@ To generate local frames for a molecule, use the following arguments:
 - `--sdf` : The molecule SDF file to generate the local frame for.
 - `--xyz` : The molecule Tinker XYZ file to generate the local frame for. Multiple molecules can be given in the same XYZ file.
 - `-o`, `--output` : The file to write the local frame to. Default is `local_frame.txt`.
+- `--use-ecfp` : Use the ECFP (Extended Connectivity FingerPrint) algorithm instead of the original one for faster symmetry class computation.
+- `--radius` : If the ECFP option is on, the ECFP radius. The default is `3`.
 - `-v`, `--verbose` : Print the local frame to the console.
 - `--debug` : Print debug information. Compare to the Poltype local frame.
 - `-h`, `--help`: Display the CLI help.
