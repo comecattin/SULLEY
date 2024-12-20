@@ -40,7 +40,17 @@ def compute_rotation_matrix(local_frame, coords):
     src = np.where(z_then_x_mask)[0]
     dst = np.abs(local_frame[src, 1:3]) - 1 # as local frame is 1-indexed
     rot_mat[src] = z_then_x_rotation(src, dst, coords)
-    
+
+    #----------------------#
+    # Bisector local frame #
+    #----------------------#
+    bisector_mask = (
+        (local_frame[:, -2] < 0) &
+        (local_frame[:, -1] == 0)
+    )
+    src = np.where(bisector_mask)[0]
+    dst = np.abs(local_frame[src, 1:3]) - 1 # as local frame is 1-indexed
+    rot_mat[src] = bisector_rotation(src, dst, coords)   
 
     return rot_mat
 
@@ -124,8 +134,66 @@ def z_then_x_rotation(src, dst, coords):
 
     return rot_mat
 
+def bisector_rotation(src, dst, coords):
+    """Compute the rotation matrix for the bisector local frame.
+        
+    Parameters
+    -----------
+    src: jnp.array
+        Source atoms.
+    dst: jnp.array
+        Destination atoms.
+    coords: jnp.array
+        Coordinates of the atoms.
 
+    Returns
+    -------
+    rot_mat: jnp.array
+        Rotation matrix.
+    """
 
+    # uz1 = atom0
+    z_dst = dst[:, 0]
+    vect_1 = coords[z_dst] - coords[src]
+    # Replace the zero vectors by [0, 0, 1]
+    vect_1 = np.where(
+        np.linalg.norm(vect_1) == 0,
+        np.array([0, 0, 1]),
+        vect_1
+    )
+    vect_1 = vect_1 / np.linalg.norm(vect_1)
+    
+    # ux1 = atom1
+    x_dst = dst[:, 1]
+    vect_2 = coords[x_dst] - coords[src]
+    # Replace the zero vectors by [1, 0, 0]
+    vect_2 = np.where(
+        np.linalg.norm(vect_2) == 0,
+        np.array([1, 0, 0]),
+        vect_2
+    )
+    vect_2 = vect_2 / np.linalg.norm(vect_2)
+
+    # uz = uz1 + ux1
+    vec_z = vect_1 + vect_2
+    # Replace non-physical vectors by [0, 0, 1]
+    vec_z = np.where(
+        (vec_z == np.array([1, 0, 1])).all(),
+        np.array([0, 0, 1]),
+        vec_z
+    )
+    vec_z = vec_z / np.linalg.norm(vec_z)
+
+    # ux = ux1 - (ux1 . uz) uz
+    vec_x = vect_2 - np.sum(vect_2 * vec_z) * vec_z
+    vec_x = vec_x / np.linalg.norm(vec_x)
+
+    # uy = uz x ux
+    vec_y = np.cross(vec_z, vec_x)
+
+    rot_mat = np.stack([vec_x, vec_y, vec_z], axis=-1)
+
+    return rot_mat
 
 
 if __name__ == "__main__":
