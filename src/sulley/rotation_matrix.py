@@ -50,7 +50,19 @@ def compute_rotation_matrix(local_frame, coords):
     )
     src = np.where(bisector_mask)[0]
     dst = np.abs(local_frame[src, 1:3]) - 1 # as local frame is 1-indexed
-    rot_mat[src] = bisector_rotation(src, dst, coords)   
+    rot_mat[src] = bisector_rotation(src, dst, coords)
+
+    #------------------------#
+    # Z-Bisector local frame #
+    #------------------------#
+    z_bisector_mask = (
+        (local_frame[:, -3] > 0) &
+        (local_frame[:, -2] < 0) &
+        (local_frame[:, -1] < 0)
+    )
+    src = np.where(z_bisector_mask)[0]
+    dst = np.abs(local_frame[src, 1:4]) - 1 # as local_frame is 1-indexed
+    rot_mat[src] = z_then_bisector_rotation(src, dst, coords)
 
     return rot_mat
 
@@ -186,6 +198,76 @@ def bisector_rotation(src, dst, coords):
 
     # ux = ux1 - (ux1 . uz) uz
     vec_x = vect_2 - np.sum(vect_2 * vec_z) * vec_z
+    vec_x = vec_x / np.linalg.norm(vec_x)
+
+    # uy = uz x ux
+    vec_y = np.cross(vec_z, vec_x)
+
+    rot_mat = np.stack([vec_x, vec_y, vec_z], axis=-1)
+
+    return rot_mat
+
+def z_then_bisector_rotation(src, dst, coords):
+    """Compute the rotation matrix for the Z-then-bisector local frame.
+        
+    Parameters
+    -----------
+    src: jnp.array
+        Source atoms.
+    dst: jnp.array
+        Destination atoms.
+    coords: jnp.array
+        Coordinates of the atoms.
+
+    Returns
+    -------
+    rot_mat: jnp.array
+        Rotation matrix.
+    """
+
+    # uz = atom0
+    z_dst = dst[:, 0]
+    vec_z = coords[z_dst] - coords[src]
+    # Replace the zero vectors by [0, 0, 1]
+    vec_z = np.where(
+        np.linalg.norm(vec_z) == 0,
+        np.array([0, 0, 1]),
+        vec_z
+    )
+    vec_z = vec_z / np.linalg.norm(vec_z)
+
+    # First bisector vector
+    bisec1_dst = dst[:, 1]
+    vec_bisec1 = coords[bisec1_dst] - coords[src]
+    # Replace the zero vectors by [1, 0, 0]
+    vec_bisec1 = np.where(
+        np.linalg.norm(vec_bisec1) == 0,
+        np.array([1, 0, 0]),
+        vec_bisec1
+    )
+    vec_bisec1 = vec_bisec1 / np.linalg.norm(vec_bisec1)
+
+    # Second bisector vector
+    bisec2_dst = dst[:, 2]
+    vec_bisec2 = coords[bisec2_dst] - coords[src]
+    # Replace the zero vectors by [1, 0, 0]
+    vec_bisec2 = np.where(
+        np.linalg.norm(vec_bisec2) == 0,
+        np.array([1, 0, 0]),
+        vec_bisec2
+    )
+    vec_bisec2 = vec_bisec2 / np.linalg.norm(vec_bisec2)
+
+    # ux = bisec1 + bisec2 and then orthogonalized
+    vec_x = vec_bisec1 + vec_bisec2
+    # Replace non-physical vectors by [1, 0, 0]
+    vec_x = np.where(
+        (vec_x == np.array([2, 0, 0])).all(),
+        np.array([1, 0, 0]),
+        vec_x
+    )
+    vec_x = vec_x / np.linalg.norm(vec_x)
+    vec_x = vec_x - np.sum(vec_x * vec_z) * vec_z
     vec_x = vec_x / np.linalg.norm(vec_x)
 
     # uy = uz x ux
