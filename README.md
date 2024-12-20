@@ -92,12 +92,12 @@ To generate local frames for a molecule, use the following arguments:
 
 SULLEY output a `.txt` file that contain the description of the local frame for each atom. Five different local frame type are detected as in Tinker (see [this paper 🗞️](https://doi.org/10.1002/jcc.26954)).
 
-1. **Z-only local frame** <p><img src="images/z_only.jpg" alt="Local Frame Example" width="200" style="border-radius: 5px;"/></p>
+1. **Z-only local frame** <p><img src="images/z_only.jpg" alt="Z-only local frame" width="200" style="border-radius: 5px;"/></p>
 
-2. **Z-then-X local frame** <p><img src="images/z_then_x.jpg" alt="Local Frame Example" width="200" style="border-radius: 5px;"/></p>
-3. **Bisector local frame** <p><img src="images/bisector.jpg" alt="Local Frame Example" width="200" style="border-radius: 5px;"/></p>
-4. **Z-then-bisector local frame**<p><img src="images/z_then_bisector.jpg" alt="Local Frame Example" width="200" style="border-radius: 5px;"/></p>
-5. **Trisector local frame**<p><img src="images/trisector.jpg" alt="Local Frame Example" width="200" style="border-radius: 5px;"/></p>
+2. **Z-then-X local frame** <p><img src="images/z_then_x.jpg" alt="Z-then-X local frame" width="200" style="border-radius: 5px;"/></p>
+3. **Bisector local frame** <p><img src="images/bisector.jpg" alt="Bisector local frame" width="200" style="border-radius: 5px;"/></p>
+4. **Z-then-bisector local frame**<p><img src="images/z_then_bisector.jpg" alt="Z-then-bisector local frame" width="200" style="border-radius: 5px;"/></p>
+5. **Trisector local frame**<p><img src="images/trisector.jpg" alt="Trisector local frame" width="200" style="border-radius: 5px;"/></p>
 
 The first colum of each line correspond to the central atom index.
 
