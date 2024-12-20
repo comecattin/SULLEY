@@ -233,16 +233,16 @@ def z_then_bisector_rotation(src, dst, coords):
         
     Parameters
     -----------
-    src: jnp.array
+    src: np.array
         Source atoms.
-    dst: jnp.array
+    dst: np.array
         Destination atoms.
-    coords: jnp.array
+    coords: np.array
         Coordinates of the atoms.
 
     Returns
     -------
-    rot_mat: jnp.array
+    rot_mat: np.array
         Rotation matrix.
     """
 
@@ -254,45 +254,45 @@ def z_then_bisector_rotation(src, dst, coords):
     vec_z = coords[z_dst] - coords[src]
     # Replace the zero vectors by [0, 0, 1]
     vec_z = np.where(
-        np.linalg.norm(vec_z) == 0,
+        np.linalg.norm(vec_z, axis=-1, keepdims=True) == 0,
         np.array([0, 0, 1]),
         vec_z
     )
-    vec_z = vec_z / np.linalg.norm(vec_z)
+    vec_z = vec_z / np.linalg.norm(vec_z, axis=-1, keepdims=True)
 
     # First bisector vector
     bisec1_dst = dst[:, 1]
     vec_bisec1 = coords[bisec1_dst] - coords[src]
     # Replace the zero vectors by [1, 0, 0]
     vec_bisec1 = np.where(
-        np.linalg.norm(vec_bisec1) == 0,
+        np.linalg.norm(vec_bisec1, axis=-1, keepdims=True) == 0,
         np.array([1, 0, 0]),
         vec_bisec1
     )
-    vec_bisec1 = vec_bisec1 / np.linalg.norm(vec_bisec1)
+    vec_bisec1 = vec_bisec1 / np.linalg.norm(vec_bisec1, axis=-1, keepdims=True)
 
     # Second bisector vector
     bisec2_dst = dst[:, 2]
     vec_bisec2 = coords[bisec2_dst] - coords[src]
     # Replace the zero vectors by [1, 0, 0]
     vec_bisec2 = np.where(
-        np.linalg.norm(vec_bisec2) == 0,
+        np.linalg.norm(vec_bisec2, axis=-1, keepdims=True) == 0,
         np.array([1, 0, 0]),
         vec_bisec2
     )
-    vec_bisec2 = vec_bisec2 / np.linalg.norm(vec_bisec2)
+    vec_bisec2 = vec_bisec2 / np.linalg.norm(vec_bisec2, axis=-1, keepdims=True)
 
     # ux = bisec1 + bisec2 and then orthogonalized
     vec_x = vec_bisec1 + vec_bisec2
     # Replace non-physical vectors by [1, 0, 0]
     vec_x = np.where(
-        (vec_x == np.array([2, 0, 0])).all(),
+        (vec_x == np.array([2, 0, 0])).all(axis=1, keepdims=True),
         np.array([1, 0, 0]),
         vec_x
     )
-    vec_x = vec_x / np.linalg.norm(vec_x)
-    vec_x = vec_x - np.sum(vec_x * vec_z) * vec_z
-    vec_x = vec_x / np.linalg.norm(vec_x)
+    vec_x = vec_x / np.linalg.norm(vec_x, axis=-1, keepdims=True)
+    vec_x = vec_x - np.sum(vec_x * vec_z, axis=-1, keepdims=True) * vec_z
+    vec_x = vec_x / np.linalg.norm(vec_x, axis=-1, keepdims=True)
 
     # uy = uz x ux
     vec_y = np.cross(vec_z, vec_x)
@@ -327,53 +327,53 @@ def trisector_rotation(src, dst, coords):
     vec_trisec1 = coords[trisec1_dst] - coords[src]
     # Replace the zero vectors by [0, 0, 1]
     vec_trisec1 = np.where(
-        np.linalg.norm(vec_trisec1) == 0,
+        np.linalg.norm(vec_trisec1, axis=-1, keepdims=True) == 0,
         np.array([0, 0, 1]),
         vec_trisec1
     )
-    vec_trisec1 = vec_trisec1 / np.linalg.norm(vec_trisec1)
+    vec_trisec1 = vec_trisec1 / np.linalg.norm(vec_trisec1, axis=-1, keepdims=True)
 
     # Trisector vector 2
     trisec2_dst = dst[:, 1]
     vec_trisec2 = coords[trisec2_dst] - coords[src]
     # Replace the zero vectors by [0, 0, 1]
     vec_trisec2 = np.where(
-        np.linalg.norm(vec_trisec2) == 0,
+        np.linalg.norm(vec_trisec2, axis=-1, keepdims=True) == 0,
         np.array([0, 0, 1]),
         vec_trisec2
     )
-    vec_trisec2 = vec_trisec2 / np.linalg.norm(vec_trisec2)
+    vec_trisec2 = vec_trisec2 / np.linalg.norm(vec_trisec2, axis=-1, keepdims=True)
 
     # Trisector vector 3
     trisec3_dst = dst[:, 2]
     vec_trisec3 = coords[trisec3_dst] - coords[src]
     # Replace the zero vectors by [0, 0, 1]
     vec_trisec3 = np.where(
-        np.linalg.norm(vec_trisec3) == 0,
+        np.linalg.norm(vec_trisec3, axis=-1, keepdims=True) == 0,
         np.array([0, 0, 1]),
         vec_trisec3
     )
-    vec_trisec3 = vec_trisec3 / np.linalg.norm(vec_trisec3)
+    vec_trisec3 = vec_trisec3 / np.linalg.norm(vec_trisec3, axis=-1, keepdims=True)
 
     # uz = trisec1 + trisec2 + trisec3
     vec_z = vec_trisec1 + vec_trisec2 + vec_trisec3
     # Replace non-physical vectors by [0, 0, 1]
     vec_z = np.where(
-        (vec_z == np.array([0, 0, 3])).all(),
+        (vec_z == np.array([0, 0, 3])).all(axis=1, keepdims=True),
         np.array([0, 0, 1]),
         vec_z
     )
-    vec_z = vec_z / np.linalg.norm(vec_z)
+    vec_z = vec_z / np.linalg.norm(vec_z, axis=-1, keepdims=True)
 
     # ux = trisec2 - (trisec2 . uz) uz
-    vec_x = vec_trisec2 - np.sum(vec_trisec2 * vec_z) * vec_z
+    vec_x = vec_trisec2 - np.sum(vec_trisec2 * vec_z, axis=-1, keepdims=True) * vec_z
     # Replace non-physical vectors by [1, 0, 0]
     vec_x = np.where(
-        np.linalg.norm(vec_x) == 0,
+        np.linalg.norm(vec_x, axis=-1, keepdims=True) == 0,
         np.array([1, 0, 0]),
         vec_x
     )
-    vec_x = vec_x / np.linalg.norm(vec_x)
+    vec_x = vec_x / np.linalg.norm(vec_x, axis=-1, keepdims=True)
 
     # uy = uz x ux
     vec_y = np.cross(vec_z, vec_x)
@@ -439,4 +439,62 @@ if __name__ == "__main__":
     # No test available for Z-only as the rotation matrix is random
     # Can just check if the last column is the vector between the two atoms
 
-    
+    # NH3 test for z-then-bisector and trisector
+    local_frame = [
+            [1, -2, -3, -4],
+            [2,  1, -3, -4],
+            [3,  1, -2, -4],
+            [4,  1, -2, -3]
+        ]
+    coordinates = np.array(
+        [
+            [0.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [0.0, 0.0, 1.0]
+        ]
+    )
+    nh3 = compute_rotation_matrix(local_frame, coordinates)
+    nh3_ref_n = np.array(
+        [
+            [-1, -1, 1],
+            [2, 0, 1],
+            [-1, 1, 1]
+        ],
+        dtype=np.float32
+    )
+    nh3_ref_n[:,0] *= 1/np.sqrt(6)
+    nh3_ref_n[:,1] *= 1/np.sqrt(2)
+    nh3_ref_n[:,2] *= 1/np.sqrt(3)
+
+    nh3_ref_h1 = np.array(
+        [
+            [0,0,-1],
+            [1,1,0],
+            [1,-1,0]
+        ],
+        dtype=np.float32
+    )
+    nh3_ref_h1[1:,:] *= 1/np.sqrt(2)
+
+    nh3_ref_h2 = np.array(
+        [
+            [1,-1,0],
+            [0,0,-1],
+            [1,1,0]
+        ],
+        dtype=np.float32
+    )
+    nh3_ref_h2[0::2,:] *= 1/np.sqrt(2)
+
+    nh3_ref_h3 = np.array(
+        [
+            [1,1,0],
+            [1,-1,0],
+            [0,0,-1]
+        ],
+        dtype=np.float32
+    )
+    nh3_ref_h3[0:2,:] *= 1/np.sqrt(2)
+
+    nh3_ref = np.stack([nh3_ref_n, nh3_ref_h1, nh3_ref_h2, nh3_ref_h3])
