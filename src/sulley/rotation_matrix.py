@@ -100,12 +100,12 @@ def z_only_rotation(src, dst, coords):
         return np.eye(3)
 
     vec_z = coords[dst] - coords[src]
-    vec_z = vec_z / np.linalg.norm(vec_z)
+    vec_z = vec_z / np.linalg.norm(vec_z, axis=-1, keepdims=True)
 
     # ux = random - (random . uz) uz
-    vec_x = np.random.normal(size=3).reshape(vec_z.shape)
-    vec_x = vec_x - np.sum(vec_x * vec_z) * vec_z
-    vec_x = vec_x / np.linalg.norm(vec_x)
+    vec_x = np.random.rand(vec_z.shape[0], vec_z.shape[1])
+    vec_x = vec_x - np.sum(vec_x * vec_z, axis=-1, keepdims=True) * vec_z
+    vec_x = vec_x / np.linalg.norm(vec_x, axis=-1, keepdims=True)
 
     # uy = uz x ux
     vec_y = np.cross(vec_z, vec_x)
@@ -423,3 +423,20 @@ if __name__ == "__main__":
         dtype=np.float32
     )
     water_ref[0,0:2,:] *= 1/np.sqrt(2)
+
+    # HCl test for z-only
+    local_frame = [
+            [1, 2, 0],
+            [2, 1, 0],
+        ]
+    coordinates = np.array(
+        [
+            [0.0, 0.0, 0.0],
+            [0.0, 0.0, 1.0],
+        ]
+    )
+    hcl = compute_rotation_matrix(local_frame, coordinates)
+    # No test available for Z-only as the rotation matrix is random
+    # Can just check if the last column is the vector between the two atoms
+
+    
