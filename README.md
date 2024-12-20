@@ -114,6 +114,21 @@ Otherwise (4 columns):
 - If all the last 3 column are negative then it defines a trisector local frame. The 3 atom index define the 3 vector of the trisector.
 - Else it defines a Z-then-bisector local frame. The second column (positive) is the atom index defining the z-axis. The two last column (negative) are the atom index defining the bisector.
 
+### Computing the rotation matrix
+
+It is possible to compute the rotation matrix from the topology and coordinates by using the `sulley` API as follows:
+
+   ```python
+   from sulley.extract_neighbors import load_molecule_from_tinker_xyz
+   from sulley.local_frame import generate_local_frame
+
+   xyz = 'PATH_TO_XYZ_FILE'
+   mol = load_molecule_from_tinker_xyz(xyz)
+   local_frame = generate_local_frame(mol=mol, filename='local_frame.txt')
+   positions = mol.GetConformer().GetPositions() # Or any np.array representing positions
+   rot_mat = compute_rotation_matrix(local_frame, positions)
+   ```
+
 ## Project Status
 
 The project is currently under development and ongoing research. Contributions and suggestions are welcome!
