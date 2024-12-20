@@ -17,6 +17,7 @@ It uses the same methodology as [Poltype](https://github.com/TinkerTools/poltype
 - [Installation](#installation)
 - [Using Sulley](#using-sulley)
 - [Understand the output](#understand-the-output)
+- [Computing the rotation matrix](#computing-the-rotation-matrix)
 - [Project Status](#project-status)
 
 ## Objective
