@@ -96,11 +96,14 @@ def z_only_rotation(src, dst, coords):
         Rotation matrix.
     """
 
+    if dst.shape[0] == 0:
+        return np.eye(3)
+
     vec_z = coords[dst] - coords[src]
     vec_z = vec_z / np.linalg.norm(vec_z)
 
     # ux = random - (random . uz) uz
-    vec_x = np.random.rand(vec_z.shape)
+    vec_x = np.random.normal(size=3).reshape(vec_z.shape)
     vec_x = vec_x - np.sum(vec_x * vec_z) * vec_z
     vec_x = vec_x / np.linalg.norm(vec_x)
 
@@ -128,28 +131,31 @@ def z_then_x_rotation(src, dst, coords):
     rot_mat: np.array
         Rotation matrix.
     """
+
+    if dst.shape[0] == 0:
+        return np.eye(3)
     
     z_dst = dst[:, 0]
     vec_z = coords[z_dst] - coords[src]
     # Replace the zero vectors by [0, 0, 1]
     vec_z = np.where(
-        np.linalg.norm(vec_z) == 0,
+        np.linalg.norm(vec_z, axis=-1, keepdims=True) == 0,
         np.array([0, 0, 1]), 
         vec_z
     )
-    vec_z = vec_z / np.linalg.norm(vec_z)
+    vec_z = vec_z / np.linalg.norm(vec_z, axis=-1, keepdims=True)
     
     # ux = atom1 - (atom1 . uz) uz
     x_dst = dst[:, 1]
     vec_x = coords[x_dst] - coords[src]
     # Remplace the zero vectors by [1, 0, 0]
     vec_x = np.where(
-        np.linalg.norm(vec_x) == 0,
+        np.linalg.norm(vec_x, axis=-1, keepdims=True) == 0,
         np.array([1, 0, 0]),
         vec_x
     )
-    vec_x = vec_x - np.sum(vec_x * vec_z) * vec_z
-    vec_x = vec_x / np.linalg.norm(vec_x)
+    vec_x = vec_x - np.sum(vec_x * vec_z, axis=-1, keepdims=True) * vec_z
+    vec_x = vec_x / np.linalg.norm(vec_x, axis=-1, keepdims=True)
 
     # uy = uz x ux
     vec_y = np.cross(vec_z, vec_x)
@@ -163,54 +169,57 @@ def bisector_rotation(src, dst, coords):
         
     Parameters
     -----------
-    src: jnp.array
+    src: np.array
         Source atoms.
-    dst: jnp.array
+    dst: np.array
         Destination atoms.
-    coords: jnp.array
+    coords: np.array
         Coordinates of the atoms.
 
     Returns
     -------
-    rot_mat: jnp.array
+    rot_mat: np.array
         Rotation matrix.
     """
+
+    if dst.shape[0] == 0:
+        return np.eye(3)
 
     # uz1 = atom0
     z_dst = dst[:, 0]
     vect_1 = coords[z_dst] - coords[src]
     # Replace the zero vectors by [0, 0, 1]
     vect_1 = np.where(
-        np.linalg.norm(vect_1) == 0,
+        np.linalg.norm(vect_1, axis=-1, keepdims=True) == 0,
         np.array([0, 0, 1]),
         vect_1
     )
-    vect_1 = vect_1 / np.linalg.norm(vect_1)
+    vect_1 = vect_1 / np.linalg.norm(vect_1, axis=-1, keepdims=True)
     
     # ux1 = atom1
     x_dst = dst[:, 1]
     vect_2 = coords[x_dst] - coords[src]
     # Replace the zero vectors by [1, 0, 0]
     vect_2 = np.where(
-        np.linalg.norm(vect_2) == 0,
+        np.linalg.norm(vect_2, axis=-1, keepdims=True) == 0,
         np.array([1, 0, 0]),
         vect_2
     )
-    vect_2 = vect_2 / np.linalg.norm(vect_2)
+    vect_2 = vect_2 / np.linalg.norm(vect_2, axis=-1, keepdims=True)
 
     # uz = uz1 + ux1
     vec_z = vect_1 + vect_2
     # Replace non-physical vectors by [0, 0, 1]
     vec_z = np.where(
-        (vec_z == np.array([1, 0, 1])).all(),
+        (vec_z == np.array([1, 0, 1])).all(axis=1, keepdims=True),
         np.array([0, 0, 1]),
         vec_z
     )
-    vec_z = vec_z / np.linalg.norm(vec_z)
+    vec_z = vec_z / np.linalg.norm(vec_z, axis=-1, keepdims=True)
 
     # ux = ux1 - (ux1 . uz) uz
-    vec_x = vect_2 - np.sum(vect_2 * vec_z) * vec_z
-    vec_x = vec_x / np.linalg.norm(vec_x)
+    vec_x = vect_2 - np.sum(vect_2 * vec_z, axis=-1, keepdims=True) * vec_z
+    vec_x = vec_x / np.linalg.norm(vec_x, axis=-1, keepdims=True)
 
     # uy = uz x ux
     vec_y = np.cross(vec_z, vec_x)
@@ -236,6 +245,9 @@ def z_then_bisector_rotation(src, dst, coords):
     rot_mat: jnp.array
         Rotation matrix.
     """
+
+    if dst.shape[0] == 0:
+        return np.eye(3)
 
     # uz = atom0
     z_dst = dst[:, 0]
@@ -307,6 +319,9 @@ def trisector_rotation(src, dst, coords):
         Rotation matrix.
     """
 
+    if dst.shape[0] == 0:
+        return np.eye(3)
+
     # Trisector vector 1
     trisec1_dst = dst[:, 0]
     vec_trisec1 = coords[trisec1_dst] - coords[src]
@@ -368,9 +383,43 @@ def trisector_rotation(src, dst, coords):
     return rot_mat
 
 if __name__ == "__main__":
-    from sulley.extract_neighbors import load_molecule_from_tinker_xyz
-    from sulley.local_frame import generate_local_frame 
-    xyz = '/home/ccattin/dev/SULLEY/test/poltype/structures/aspirin.xyz'
-    mol = load_molecule_from_tinker_xyz(xyz)
-    local_frame = generate_local_frame(mol=mol, filename='local_frame.txt')
-    rot_mat = compute_rotation_matrix(local_frame, None)
+    # from sulley.extract_neighbors import load_molecule_from_tinker_xyz
+    # from sulley.local_frame import generate_local_frame 
+    # xyz = '/home/ccattin/dev/SULLEY/test/poltype/structures/aspirin.xyz'
+    # mol = load_molecule_from_tinker_xyz(xyz)
+    # local_frame = generate_local_frame(mol=mol, filename='local_frame.txt')
+    # rot_mat = compute_rotation_matrix(local_frame, None)
+
+    # Water test for bisector and z-then-x
+    local_frame = [
+        [1, -2, -3],
+        [2, 1, 3],
+        [3, 1, 2]
+    ]
+    coords = np.array([
+        [0.0, 0.0, 0.0],
+        [1.0, 0.0, 0.0],
+        [0.0, 1.0, 0.0]
+    ])
+    water = compute_rotation_matrix(local_frame, coords)
+    water_ref = np.array(
+        [
+            [
+                [-1, 0, 1],
+                [1, 0, 1],
+                [0, 1, 0]
+            ],
+            [
+                [0, 0, -1],
+                [1, 0, 0],
+                [0, -1, 0]
+            ],
+            [
+                [1, 0, 0],
+                [0, 0, -1],
+                [0, 1, 0]
+            ]
+        ],
+        dtype=np.float32
+    )
+    water_ref[0,0:2,:] *= 1/np.sqrt(2)
