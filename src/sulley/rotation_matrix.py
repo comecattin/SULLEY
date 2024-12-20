@@ -64,6 +64,18 @@ def compute_rotation_matrix(local_frame, coords):
     dst = np.abs(local_frame[src, 1:4]) - 1 # as local_frame is 1-indexed
     rot_mat[src] = z_then_bisector_rotation(src, dst, coords)
 
+    #-----------------------#
+    # Trisector local frame #
+    #-----------------------#
+    trisector_mask = (
+        (local_frame[:, -3] < 0) &
+        (local_frame[:, -2] < 0) &
+        (local_frame[:, -1] < 0)
+    )
+    src = np.where(trisector_mask)[0]
+    dst = np.abs(local_frame[src, 1:4]) - 1 # as local_frame is 1-indexed
+    rot_mat[src] = trisector_rotation(src, dst, coords)
+
     return rot_mat
 
 def z_only_rotation(src, dst, coords):
@@ -277,6 +289,83 @@ def z_then_bisector_rotation(src, dst, coords):
 
     return rot_mat
 
+def trisector_rotation(src, dst, coords):
+    """Compute the rotation matrix for the trisector local frame.
+    
+    Parameters
+    -----------
+    src: np.array
+        Source atoms.
+    dst: np.array
+        Destination atoms.
+    coords: np.array
+        Coordinates of the atoms.
+
+    Returns
+    -------
+    rot_mat: np.array
+        Rotation matrix.
+    """
+
+    # Trisector vector 1
+    trisec1_dst = dst[:, 0]
+    vec_trisec1 = coords[trisec1_dst] - coords[src]
+    # Replace the zero vectors by [0, 0, 1]
+    vec_trisec1 = np.where(
+        np.linalg.norm(vec_trisec1) == 0,
+        np.array([0, 0, 1]),
+        vec_trisec1
+    )
+    vec_trisec1 = vec_trisec1 / np.linalg.norm(vec_trisec1)
+
+    # Trisector vector 2
+    trisec2_dst = dst[:, 1]
+    vec_trisec2 = coords[trisec2_dst] - coords[src]
+    # Replace the zero vectors by [0, 0, 1]
+    vec_trisec2 = np.where(
+        np.linalg.norm(vec_trisec2) == 0,
+        np.array([0, 0, 1]),
+        vec_trisec2
+    )
+    vec_trisec2 = vec_trisec2 / np.linalg.norm(vec_trisec2)
+
+    # Trisector vector 3
+    trisec3_dst = dst[:, 2]
+    vec_trisec3 = coords[trisec3_dst] - coords[src]
+    # Replace the zero vectors by [0, 0, 1]
+    vec_trisec3 = np.where(
+        np.linalg.norm(vec_trisec3) == 0,
+        np.array([0, 0, 1]),
+        vec_trisec3
+    )
+    vec_trisec3 = vec_trisec3 / np.linalg.norm(vec_trisec3)
+
+    # uz = trisec1 + trisec2 + trisec3
+    vec_z = vec_trisec1 + vec_trisec2 + vec_trisec3
+    # Replace non-physical vectors by [0, 0, 1]
+    vec_z = np.where(
+        (vec_z == np.array([0, 0, 3])).all(),
+        np.array([0, 0, 1]),
+        vec_z
+    )
+    vec_z = vec_z / np.linalg.norm(vec_z)
+
+    # ux = trisec2 - (trisec2 . uz) uz
+    vec_x = vec_trisec2 - np.sum(vec_trisec2 * vec_z) * vec_z
+    # Replace non-physical vectors by [1, 0, 0]
+    vec_x = np.where(
+        np.linalg.norm(vec_x) == 0,
+        np.array([1, 0, 0]),
+        vec_x
+    )
+    vec_x = vec_x / np.linalg.norm(vec_x)
+
+    # uy = uz x ux
+    vec_y = np.cross(vec_z, vec_x)
+
+    rot_mat = np.stack([vec_x, vec_y, vec_z], axis=-1)
+
+    return rot_mat
 
 if __name__ == "__main__":
     from sulley.extract_neighbors import load_molecule_from_tinker_xyz
