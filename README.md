@@ -1,7 +1,7 @@
 # SULLEY 🚪 ⚡
 
 <p align='center'>
-  <img src="https://github.com/user-attachments/assets/d2298efa-b9c7-43e1-b3c3-857f15c4cd98" alt="drawing SULLEY" width="400"/>
+<img src="images/sulley.png" alt="drawing SULLEY" width="400" style="border-radius: 50px;"/>
 </p>
 
 **SULLEY** stands for **Symmetry Understanding of Local Frames for Learning Equivariant geometrY**. This project focuses on developing a framework to find local frames for each atom in a molecule, allowing for the accurate description of their electrostatic multipoles.
@@ -90,13 +90,14 @@ To generate local frames for a molecule, use the following arguments:
 
 ### Understand the output
 
-SULLEY output a `.txt` file that contain the description of the local frame for each atom. Five different local frame type are detected as in Tinker.
+SULLEY output a `.txt` file that contain the description of the local frame for each atom. Five different local frame type are detected as in Tinker (see [this paper 🗞️](https://doi.org/10.1002/jcc.26954)).
 
-1. Z-only local frame
-2. Z-then-X local frame
-3. Z-only local frame
-4. Z-then-bisector local frame
-5. trisector local frame.
+1. **Z-only local frame** <p><img src="images/z_only.jpg" alt="Z-only local frame" width="200" style="border-radius: 5px;"/></p>
+
+2. **Z-then-X local frame** <p><img src="images/z_then_x.jpg" alt="Z-then-X local frame" width="200" style="border-radius: 5px;"/></p>
+3. **Bisector local frame** <p><img src="images/bisector.jpg" alt="Bisector local frame" width="200" style="border-radius: 5px;"/></p>
+4. **Z-then-bisector local frame**<p><img src="images/z_then_bisector.jpg" alt="Z-then-bisector local frame" width="200" style="border-radius: 5px;"/></p>
+5. **Trisector local frame**<p><img src="images/trisector.jpg" alt="Trisector local frame" width="200" style="border-radius: 5px;"/></p>
 
 The first colum of each line correspond to the central atom index.
 
@@ -113,6 +114,21 @@ Otherwise (4 columns):
 
 - If all the last 3 column are negative then it defines a trisector local frame. The 3 atom index define the 3 vector of the trisector.
 - Else it defines a Z-then-bisector local frame. The second column (positive) is the atom index defining the z-axis. The two last column (negative) are the atom index defining the bisector.
+
+### Computing the rotation matrix
+
+It is possible to compute the rotation matrix from the topology and coordinates by using the `sulley` API as follows:
+
+   ```python
+   from sulley.extract_neighbors import load_molecule_from_tinker_xyz
+   from sulley.local_frame import generate_local_frame
+
+   xyz = 'PATH_TO_XYZ_FILE'
+   mol = load_molecule_from_tinker_xyz(xyz)
+   local_frame = generate_local_frame(mol=mol, filename='local_frame.txt')
+   positions = mol.GetConformer().GetPositions() # Or any np.array representing positions
+   rot_mat = compute_rotation_matrix(local_frame, positions)
+   ```
 
 ## Project Status
 
