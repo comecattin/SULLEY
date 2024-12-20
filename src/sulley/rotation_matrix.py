@@ -25,8 +25,9 @@ def compute_rotation_matrix(local_frame, coords):
         (local_frame[:, -2] == 0) &
         (local_frame[:, -1] == 0)
     )
-    src = np.where(z_only_mask)
-
+    src = np.where(z_only_mask)[0]
+    dst = local_frame[src, 1] - 1 # as local frame is 1-indexed
+    rot_mat[src] = z_only_rotation(src, dst, coords)
 
 
     #----------------------#
@@ -37,9 +38,42 @@ def compute_rotation_matrix(local_frame, coords):
         (local_frame[:, -1] == 0)
     )
     src = np.where(z_then_x_mask)[0]
-    dst = np.abs(local_frame[src, 1:3]) - 1
+    dst = np.abs(local_frame[src, 1:3]) - 1 # as local frame is 1-indexed
     rot_mat[src] = z_then_x_rotation(src, dst, coords)
     
+
+    return rot_mat
+
+def z_only_rotation(src, dst, coords):
+    """Compute the rotation matrix for the z-only local frame.
+    
+    Parameters
+    -----------
+    src: np.array
+        Source atoms.
+    dst: np.array
+        Destination atoms.
+    coords: np.array
+        Coordinates of the atoms.
+
+    Returns
+    -------
+    rot_mat: np.array
+        Rotation matrix.
+    """
+
+    vec_z = coords[dst] - coords[src]
+    vec_z = vec_z / np.linalg.norm(vec_z)
+
+    # ux = random - (random . uz) uz
+    vec_x = np.random.rand(vec_z.shape)
+    vec_x = vec_x - np.sum(vec_x * vec_z) * vec_z
+    vec_x = vec_x / np.linalg.norm(vec_x)
+
+    # uy = uz x ux
+    vec_y = np.cross(vec_z, vec_x)
+
+    rot_mat = np.stack([vec_x, vec_y, vec_z], axis=-1)
 
     return rot_mat
 
