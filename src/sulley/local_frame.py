@@ -12,7 +12,7 @@ from rdkit.Chem import rdMolTransforms
 from rdkit.Chem import AllChem
 from collections import Counter
 
-def generate_local_frame(mol, filename="local_frame.txt", use_ecfp=False, radius=3):
+def generate_local_frame(mol, filename=None, use_ecfp=False, radius=3):
 
     # Get the conformer
     mol.UpdatePropertyCache()

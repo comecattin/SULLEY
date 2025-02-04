@@ -30,7 +30,7 @@ def write_peditin_file(
     local_frame2 : list
         Local frame second vector.
     filename : str
-        Name of the file.
+        Name of the file. If None, no file is written.
     """
 
     local_frame1 = sanitize_local_frame(local_frame1)
@@ -38,7 +38,8 @@ def write_peditin_file(
 
     output_local_frame = []
 
-    f = open(filename, 'w')
+    if filename is not None:
+        f = open(filename, 'w')
 
     for atom in mol.GetAtoms():
         atom_idx = atom.GetIdx()
@@ -48,11 +49,12 @@ def write_peditin_file(
             not idx_to_bisec_then_z_bool[atom_idx]
             and not idx_to_trisec_bool[atom_idx]
         ):
-            f.write(
-                str(atom_idx + 1) + " " +
-                str(local_frame1[atom_idx]) + " " +
-                str(local_frame2[atom_idx]) + "\n"
-            )
+            if filename is not None:
+                f.write(
+                    str(atom_idx + 1) + " " +
+                    str(local_frame1[atom_idx]) + " " +
+                    str(local_frame2[atom_idx]) + "\n"
+                )
             output_local_frame.append(
                 [
                     atom_idx + 1,
@@ -67,12 +69,13 @@ def write_peditin_file(
             and not idx_to_trisec_bool[atom_idx]
         ):
             bisec_idx = idx_to_bisec_idx[atom_idx]
-            f.write(
-                str(atom_idx + 1) + " " +
-                str(local_frame1[atom_idx]) + " -" +
-                str(bisec_idx[0] + 1) + " -" +
-                str(bisec_idx[1] + 1) + "\n"
-            )
+            if filename is not None:
+                f.write(
+                    str(atom_idx + 1) + " " +
+                    str(local_frame1[atom_idx]) + " -" +
+                    str(bisec_idx[0] + 1) + " -" +
+                    str(bisec_idx[1] + 1) + "\n"
+                )
             output_local_frame.append(
                 [
                     atom_idx + 1,
@@ -85,13 +88,13 @@ def write_peditin_file(
         # Trisection
         else:
             trisec_idx = idx_to_trisec_idx[atom_idx]
-            print(trisec_idx)
-            f.write(
-                str(atom_idx + 1) + " -" +
-                str(trisec_idx[0] + 1) + " -" +
-                str(trisec_idx[1] + 1) + " -" +
-                str(trisec_idx[2] + 1) + "\n"
-            )
+            if filename is not None:
+                f.write(
+                    str(atom_idx + 1) + " -" +
+                    str(trisec_idx[0] + 1) + " -" +
+                    str(trisec_idx[1] + 1) + " -" +
+                    str(trisec_idx[2] + 1) + "\n"
+                )
             output_local_frame.append(
                 [
                     atom_idx + 1,
@@ -101,7 +104,8 @@ def write_peditin_file(
                 ]
             )
     
-    f.close()
+    if filename is not None:
+        f.close()
     return output_local_frame
 
 def sanitize_local_frame(local_frame):
