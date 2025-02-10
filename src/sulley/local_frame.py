@@ -36,7 +36,7 @@ def generate_local_frame(mol, filename=None, use_ecfp=False, radius=3):
     frags = rdmolops.GetMolFrags(mol, asMols=True)
     local_frame = []
     for mol in frags:
-        local_frame.append(
+        local_frame.extend(
             generate_local_frame_single_mol(mol, filename=filename, use_ecfp=use_ecfp, radius=radius)
         )
     return local_frame
