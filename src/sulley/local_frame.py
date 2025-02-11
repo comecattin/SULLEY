@@ -8,11 +8,59 @@ Made by C. Cattin, 2024.
 from sulley import symmetry
 from sulley import extract_neighbors
 from sulley import write_file
-from rdkit.Chem import rdMolTransforms
+from rdkit.Chem import rdMolTransforms, rdmolops
 from rdkit.Chem import AllChem
 from collections import Counter
 
 def generate_local_frame(mol, filename=None, use_ecfp=False, radius=3):
+    """Generate the local frame for a molecule.
+
+    Parameters
+    ----------
+    mol : rdkit.Chem.rdchem.Mol
+        The molecule for which to generate the local frame.
+    filename : str, optional
+        The name of the file to write the local frame to. If None, the local frame is not written to a file.
+    use_ecfp : bool, optional
+        Whether to use the ECFP method to generate the symmetry classes. Default is False.
+    radius : int, optional
+        The radius of the ECFP method. Default is 3.
+    
+    Returns
+    -------
+    local_frame : list
+        The local frame of the molecule.
+
+    """
+
+    frags = rdmolops.GetMolFrags(mol, asMols=True)
+    local_frame = []
+    for mol in frags:
+        local_frame.extend(
+            generate_local_frame_single_mol(mol, filename=filename, use_ecfp=use_ecfp, radius=radius)
+        )
+    return local_frame
+
+def generate_local_frame_single_mol(mol, filename=None, use_ecfp=False, radius=3):
+    """Generate the local frame for a single molecule.
+
+    Parameters
+    ----------
+    mol : rdkit.Chem.rdchem.Mol
+        The molecule for which to generate the local frame.
+    filename : str, optional
+        The name of the file to write the local frame to. If None, the local frame is not written to a file.
+    use_ecfp : bool, optional
+        Whether to use the ECFP method to generate the symmetry classes. Default is False.
+    radius : int, optional
+        The radius of the ECFP method. Default is 3.
+
+    Returns
+    -------
+    local_frame : list
+        The local frame of the molecule.
+
+    """
 
     # Get the conformer
     mol.UpdatePropertyCache()
