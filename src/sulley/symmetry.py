@@ -34,8 +34,8 @@ def get_canonical_labels(
 
     if use_ecfp:
         index_to_matching_indices = compute_symmetry_type_ecfp(mol, radius=radius)
-
-    index_to_matching_indices = compute_symmetry_type(mol)
+    else:
+        index_to_matching_indices = compute_symmetry_type(mol)
 
     groups = []
     group_to_heavy_atom = {}
