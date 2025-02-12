@@ -39,6 +39,10 @@ def generate_local_frame(mol, filename=None, use_ecfp=False, radius=3):
         local_frame.extend(
             generate_local_frame_single_mol(mol, filename=filename, use_ecfp=use_ecfp, radius=radius)
         )
+    # Handle multiple local frames
+    if len(frags) > 1:
+        local_frame = write_file.shift_multiple_local_frame(local_frame)
+        
     return local_frame
 
 def generate_local_frame_single_mol(mol, filename=None, use_ecfp=False, radius=3):
