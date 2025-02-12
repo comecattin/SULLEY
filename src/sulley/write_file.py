@@ -167,17 +167,4 @@ def shift_multiple_local_frame(local_frame):
 
 
 if __name__ == "__main__":
-    local_frame = [
-        [1, 2, 3, 0],
-        [2, 3, 1, 0],
-        [3, 2, 0, 0],
-        [1, 2, 5, 0],
-        [2, 5, 0, 0],
-        [3, 2, 5, 0],
-        [4, 2, 5, 0],
-        [5, -6, -7, 0],
-        [6, 5, 7, 0],
-        [7, 5, 6, 0]
-    ]
-    local_frame_shifted = shift_multiple_local_frame(local_frame)
-    print(local_frame_shifted)
+    pass
