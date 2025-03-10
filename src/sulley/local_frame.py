@@ -496,13 +496,18 @@ def generate_local_frame_single_mol(mol, filename=None, use_ecfp=False, radius=3
                 local_frame2[atom_index] = sorted_unique_neighbors_no_repeat_new[1] + 1
     
     # Write the local frame file
-    local_frame = write_file.write_peditin_file(
+    local_frame = write_file.local_frame_to_output(
         mol,
         idx_to_bisec_then_z_bool, idx_to_trisec_bool,
         idx_to_bisec_idx, idx_to_trisec_idx,
         local_frame1, local_frame2,
-        filename = filename
-    )
+        )
+    if filename is not None:
+
+        write_file.write_peditin_file(
+            output_local_frame=local_frame,
+            filename = filename
+        )
 
     return local_frame
 

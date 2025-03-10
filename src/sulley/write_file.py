@@ -4,47 +4,17 @@
 Made by C. Cattin, 2024.
 """
 
-def write_peditin_file(
+def local_frame_to_output(
         mol,
         idx_to_bisec_then_z_bool, idx_to_trisec_bool,
         idx_to_bisec_idx, idx_to_trisec_idx,
         local_frame1, local_frame2,
-        filename:str
     ):
-    """Write the local frame file.
-
-    Parameters
-    ----------
-    mol : mol : rdkit.Chem.Mol
-        RDKit molecule object.
-    idx_to_bisec_then_z_bool : dict
-        Index associated to a bisection then z-axis.
-    idx_to_trisec_bool : dict
-        Index associated to a trisection.
-    idx_to_bisec_idx : dict
-        Index associated to the bisection index.
-    idx_to_trisec_idx : dict
-        Index associated to the trisection index.
-    local_frame1 : list
-        Local frame first vector.
-    local_frame2 : list
-        Local frame second vector.
-    filename : str
-        Name of the file. If None, no file is written.
-    
-    Returns
-    -------
-    output_local_frame : list
-        Local frame for every atom.
-    """
 
     local_frame1 = sanitize_local_frame(local_frame1)
     local_frame2 = sanitize_local_frame(local_frame2)
 
     output_local_frame = []
-
-    if filename is not None:
-        f = open(filename, 'w')
 
     for atom in mol.GetAtoms():
         atom_idx = atom.GetIdx()
@@ -54,12 +24,6 @@ def write_peditin_file(
             not idx_to_bisec_then_z_bool[atom_idx]
             and not idx_to_trisec_bool[atom_idx]
         ):
-            if filename is not None:
-                f.write(
-                    str(atom_idx + 1) + " " +
-                    str(local_frame1[atom_idx]) + " " +
-                    str(local_frame2[atom_idx]) + "\n"
-                )
             output_local_frame.append(
                 [
                     atom_idx + 1,
@@ -74,13 +38,6 @@ def write_peditin_file(
             and not idx_to_trisec_bool[atom_idx]
         ):
             bisec_idx = idx_to_bisec_idx[atom_idx]
-            if filename is not None:
-                f.write(
-                    str(atom_idx + 1) + " " +
-                    str(local_frame1[atom_idx]) + " -" +
-                    str(bisec_idx[0] + 1) + " -" +
-                    str(bisec_idx[1] + 1) + "\n"
-                )
             output_local_frame.append(
                 [
                     atom_idx + 1,
@@ -93,13 +50,6 @@ def write_peditin_file(
         # Trisection
         else:
             trisec_idx = idx_to_trisec_idx[atom_idx]
-            if filename is not None:
-                f.write(
-                    str(atom_idx + 1) + " -" +
-                    str(trisec_idx[0] + 1) + " -" +
-                    str(trisec_idx[1] + 1) + " -" +
-                    str(trisec_idx[2] + 1) + "\n"
-                )
             output_local_frame.append(
                 [
                     atom_idx + 1,
@@ -108,10 +58,26 @@ def write_peditin_file(
                     -(trisec_idx[2] + 1)
                 ]
             )
-    
-    if filename is not None:
-        f.close()
     return output_local_frame
+
+
+def write_peditin_file(
+        output_local_frame,
+        filename
+    ):
+    """Write the local frame file.
+
+    Parameters
+    ----------
+    output_local_frame : list
+        Local frame for every atom.
+    filename : str
+        Name of the file.
+    """
+    with open(filename, 'w') as f:
+        for atom in output_local_frame:
+            f.write(' '.join([str(i) for i in atom]) + '\n')
+    
 
 def sanitize_local_frame(local_frame):
     """Shift the local frame indices to start at 1.
