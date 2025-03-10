@@ -122,11 +122,21 @@ def split_disconnected_graphs(graph):
     list
         List of disconnected subgraphs.
     """
-
+    original_node_order = list(graph.nodes)
     connected = nx.connected_components(graph)
     subgraphs = []
+
     for nodes in connected:
-        subgraph = graph.subgraph(nodes)
+        sorted_nodes = sorted(nodes, key=original_node_order.index)
+        subgraph = nx.Graph()
+        for node in sorted_nodes:
+            subgraph.add_node(
+                node,
+                **graph.nodes[node]
+            )
+        subgraph.add_edges_from(
+            (u, v) for u, v in graph.edges(sorted_nodes)
+        )
         subgraphs.append(subgraph)
 
     return subgraphs
