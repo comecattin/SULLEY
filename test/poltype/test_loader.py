@@ -89,3 +89,15 @@ def test_aspirin_ethanol_multiple_xyz():
         test_path + "output/ethanol_lf_sulley.txt",
         test_path + "output/ethanol_lf_poltype.txt"
     )
+
+def test_water_multiple_xyz():
+    test_path = os.getcwd() + "/test/poltype/"
+    mols = load_molecule_from_tinker_xyz(test_path + "structures/water.xyz")
+    for mol in mols:
+        local_frame = generate_local_frame(
+            mol=mol,
+            use_ecfp=True
+        )
+        assert local_frame == [
+            [1,-2,-3], [2,1,3], [3,1,2]
+        ]
