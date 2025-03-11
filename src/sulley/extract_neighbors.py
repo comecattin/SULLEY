@@ -87,13 +87,18 @@ def parse_tinker_xyz(filename: str):
 
     return atom, bonds
 
-def load_molecule_from_tinker_xyz(filename: str):
+def load_molecule_from_tinker_xyz(
+        filename: str,
+        return_single_molecule = False
+    ):
     """Load a molecule from a Tinker .xyz file.
 
     Parameters
     ----------
     filename : str
         Name of the .xyz file.
+    return_single_molecule : bool
+        If True, return a single molecule even if multiple molecules are present.
 
     Returns
     -------
@@ -146,9 +151,8 @@ def load_molecule_from_tinker_xyz(filename: str):
         atom.SetNoImplicit(True)
         atom.UpdatePropertyCache(strict=False)
 
-    
     # If multiple molecules are present return list of molecules
-    if not is_single_molecule(mol):
+    if not is_single_molecule(mol) and not return_single_molecule:
         mols = split_multimolecules(mol)
         return mols
         
