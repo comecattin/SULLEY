@@ -24,7 +24,10 @@ def main(args=None):
     if args.sdf:
         mol = load_molecule_from_sdf(args.sdf)
     if args.xyz:
-        mol = load_molecule_from_tinker_xyz(args.xyz)
+        mol = load_molecule_from_tinker_xyz(
+            filename=args.xyz,
+            return_single_molecule=args.return_single_molecule
+        )
         if type(mol) is list:
             for i, m in enumerate(mol):
                 print(f"Generating local frame for molecule {i+1}...")
@@ -37,7 +40,11 @@ def main(args=None):
                 print(f"Local frame written to {args.output.replace('.txt', f'_{i+1}.txt')}.")
             return local_frame
 
-    local_frame = generate_local_frame(mol=mol, filename=args.output, use_ecfp=args.use_ecfp, radius=args.radius)
+    local_frame = generate_local_frame(
+        mol=mol, filename=args.output,
+        use_ecfp=args.use_ecfp,
+        radius=args.radius
+    )
 
     print(f"Local frame written to {args.output}.")
 
@@ -107,6 +114,11 @@ def cli():
         type=int,
         help='The ECFP radius. Default is 3.',
         default=3,
+    )
+    parser.add_argument(
+        '--return_single_molecule',
+        action='store_true',
+        help='Return the local frame of a single molecule in the case of a multi-molecule XYZ file. Use with --xyz and --use_ecfp.'
     )
     parser.add_argument(
         '-v',

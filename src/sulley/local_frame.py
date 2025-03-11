@@ -37,23 +37,31 @@ def generate_local_frame(mol, filename=None, use_ecfp=False, radius=3):
     local_frame = []
     for mol in frags:
         local_frame.extend(
-            generate_local_frame_single_mol(mol, filename=filename, use_ecfp=use_ecfp, radius=radius)
+            generate_local_frame_single_mol(
+                mol,
+                use_ecfp=use_ecfp,
+                radius=radius
+            )
         )
     # Handle multiple local frames
     if len(frags) > 1:
         local_frame = write_file.shift_multiple_local_frame(local_frame)
+    
+    if filename is not None:
+        write_file.write_peditin_file(
+            output_local_frame=local_frame,
+            filename = filename
+        )
         
     return local_frame
 
-def generate_local_frame_single_mol(mol, filename=None, use_ecfp=False, radius=3):
+def generate_local_frame_single_mol(mol, use_ecfp=False, radius=3):
     """Generate the local frame for a single molecule.
 
     Parameters
     ----------
     mol : rdkit.Chem.rdchem.Mol
         The molecule for which to generate the local frame.
-    filename : str, optional
-        The name of the file to write the local frame to. If None, the local frame is not written to a file.
     use_ecfp : bool, optional
         Whether to use the ECFP method to generate the symmetry classes. Default is False.
     radius : int, optional
@@ -495,18 +503,12 @@ def generate_local_frame_single_mol(mol, filename=None, use_ecfp=False, radius=3
                 local_frame1[atom_index] = sorted_unique_neighbors_no_repeat_new[0] + 1
                 local_frame2[atom_index] = sorted_unique_neighbors_no_repeat_new[1] + 1
     
-    # Write the local frame file
+    # Output the local frame in correct format
     local_frame = write_file.local_frame_to_output(
         mol,
         idx_to_bisec_then_z_bool, idx_to_trisec_bool,
         idx_to_bisec_idx, idx_to_trisec_idx,
         local_frame1, local_frame2,
-        )
-    if filename is not None:
-
-        write_file.write_peditin_file(
-            output_local_frame=local_frame,
-            filename = filename
         )
 
     return local_frame

@@ -71,6 +71,7 @@ To generate local frames for a molecule, use the following arguments:
 - `-o`, `--output` : The file to write the local frame to. Default is `local_frame.txt`.
 - `--use-ecfp` : Use the ECFP (Extended Connectivity FingerPrint) algorithm instead of the original one for faster symmetry class computation.
 - `--radius` : If the ECFP option is on, the ECFP radius. The default is `3`.
+- `--return_single_molecule`: Return the local frame as if only a single molecule was present in the case of a multi-molecule XYZ file. Use with `--xyz` and `--use_ecfp`.
 - `-v`, `--verbose` : Print the local frame to the console.
 - `--debug` : Print debug information. Compare to the Poltype local frame.
 - `-h`, `--help`: Display the CLI help.
@@ -123,6 +124,7 @@ It is possible to compute the rotation matrix from the topology and coordinates 
    ```python
    from sulley.extract_neighbors import load_molecule_from_tinker_xyz
    from sulley.local_frame import generate_local_frame
+   from sulley.rotation_matrix import compute_rotation_matrix
 
    xyz = 'PATH_TO_XYZ_FILE'
    mol = load_molecule_from_tinker_xyz(xyz)
