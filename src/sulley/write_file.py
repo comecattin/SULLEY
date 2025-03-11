@@ -10,6 +10,30 @@ def local_frame_to_output(
         idx_to_bisec_idx, idx_to_trisec_idx,
         local_frame1, local_frame2,
     ):
+    """Convert the local frame to the output format.
+
+    Parameters
+    ----------
+    mol : rdkit.Chem.rdchem.Mol
+        Molecule.
+    idx_to_bisec_then_z_bool : dict
+        Index associated to a bisection then z-axis.
+    idx_to_trisec_bool : dict
+        INdex associated to a trisection.
+    idx_to_bisec_idx : dict
+        Index associated to a bisection index.
+    idx_to_trisec_idx : dict
+        Index associated to a trisection index.
+    local_frame1 : list
+        Local frame first vector.
+    local_frame2 : list
+        Local frame second vector.
+
+    Returns
+    -------
+    output_local_frame : list
+        Local frame for every atom.
+    """
 
     local_frame1 = sanitize_local_frame(local_frame1)
     local_frame2 = sanitize_local_frame(local_frame2)
